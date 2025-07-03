@@ -26,15 +26,46 @@ html = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <title>Lista Eventi Wiseplay</title>
 <style>
-body { font-family: sans-serif; }
-button { margin: 10px; padding: 10px; font-size: 16px; display: block; width: 100%%; }
+body { font-family: sans-serif; margin: 20px; }
+input[type="text"] { width: 100%%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
+
+button {
+  margin: 3px;
+  padding: 6px 10px;
+  font-size: 14px;
+  display: inline-block;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-original { background-color: #4CAF50; color: white; }    /* verde */
+.btn-embed    { background-color: #2196F3; color: white; }    /* blu */
+.btn-other    { background-color: #f44336; color: white; }    /* rosso */
+
 h1 { margin-bottom: 20px; }
 h2 { margin-top: 30px; color: #333; }
-div { margin-bottom: 15px; }
+div { margin-bottom: 10px; }
 </style>
 </head>
 <body>
 <h1>Eventi Wiseplay (Lista Generata)</h1>
+
+<input type="text" id="searchInput" placeholder="Cerca canale/evento...">
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', function() {
+    const filter = searchInput.value.toLowerCase();
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+      const text = button.textContent.toLowerCase();
+      button.parentElement.style.display = text.includes(filter) ? '' : 'none';
+    });
+  });
+});
+</script>
 """
 
 # Funzione ricorsiva per estrarre gruppi e canali, generando HTML direttamente
@@ -47,16 +78,15 @@ def process_groups(groups):
             for s in group["stations"]:
                 name = s.get("name", "Senza Nome").replace('"', "'")
                 url = s.get("url", "#")
-                # Se l'URL contiene "thedaddy.click/cast/", sostituisci "cast" con "embed"
                 if "thedaddy.click/cast/" in url:
                     embed_url = url.replace("thedaddy.click/cast/", "thedaddy.click/embed/")
                     html += f'<div>\n'
-                    html += f'<button onclick="window.open(\'{url}\', \'_blank\')">{name} (Originale)</button>\n'
-                    html += f'<button onclick="window.open(\'{embed_url}\', \'_blank\')">{name} (Embed)</button>\n'
+                    html += f'<button class="btn-original" onclick="window.open(\'{url}\', \'_blank\')">{name} (Originale)</button>\n'
+                    html += f'<button class="btn-embed" onclick="window.open(\'{embed_url}\', \'_blank\')">{name} (Embed)</button>\n'
                     html += f'</div>\n'
                 else:
                     html += f'<div>\n'
-                    html += f'<button onclick="window.open(\'{url}\', \'_blank\')">{name}</button>\n'
+                    html += f'<button class="btn-other" onclick="window.open(\'{url}\', \'_blank\')">{name}</button>\n'
                     html += f'</div>\n'
         if "groups" in group:
             process_groups(group["groups"])
