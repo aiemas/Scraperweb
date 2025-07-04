@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<title>Lista Eventi Wiseplay con Player Integrato</title>
+<style>
+  body { font-family: sans-serif; margin: 20px; }
+  input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
+  button {
+    margin: 3px;
+    padding: 6px 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .btn-original { background-color: #4CAF50; color: white; }
+  .btn-embed { background-color: #2196F3; color: white; }
+  .btn-other { background-color: #f44336; color: white; }
+  #player-container {
+    margin-top: 30px;
+    position: relative;
+    width: 100%;
+    height: 480px;
+    background: black;
+    display: none;
+  }
+  #player {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  #fs-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  h2 { margin-top: 30px; color: #333; }
+  .channel-group { margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<h1>Eventi Wiseplay (Lista Integrata)</h1>
+
+<input type="text" id="searchInput" placeholder="Cerca canale/evento..." />
+
+<div id="channels"></div>
+
+<div id="player-container">
+  <iframe id="player" allowfullscreen></iframe>
+  <button id="fs-button">Fullscreen</button>
+</div>
+
+<script>
+// Lista canali - sostituisci con la tua lista generata o incollala direttamente qui
+const channelData = [
+  // esempio di struttura semplificata: 
+  // {group:"Gruppo 1", channels:[{name:"Canale 1", url:"https://...", type:"original"}, ...]}
+];
+
+// Funzione per creare pulsanti e struttura canali dinamicamente
+function createChannelsList(data) {
+  const container = document.getElementById("channels");
+  container.innerHTML = "";
+  data.forEach(group => {
+    const groupDiv = document.createElement("div");
+    groupDiv.classList.add("channel-group");
+    const h2 = document.createElement("h2");
+    h2.textContent = group.group;
+    groupDiv.appendChild(h2);
+    group.channels.forEach(ch => {
+      const div = document.createElement("div");
+      const btn = document.createElement("button");
+      btn.textContent = ch.name + (ch.type==="original" ? " (Originale)" : ch.type==="embed" ? " (Embed)" : "");
+      btn.className = ch.type==="original" ? "btn-original" : ch.type==="embed" ? "btn-embed" : "btn-other";
+      btn.onclick = () => loadPlayer(ch);
+      div.appendChild(btn);
+      groupDiv.appendChild(div);
+    });
+    container.appendChild(groupDiv);
+  });
+}
+
+// Funzione per caricare il player embed
+function loadPlayer(channel) {
+  const playerContainer = document.getElementById("player-container");
+  const iframe = document.getElementById("player");
+  if(channel.type === "embed") {
+    iframe.src = channel.url;
+    playerContainer.style.display = "block";
+  } else {
+    // per originali o altri apri in nuova scheda
+    window.open(channel.url, "_blank");
+  }
+}
+
+// Bottone fullscreen
+document.getElementById("fs-button").addEventListener("click", () => {
+  const el = document.getElementById("player-container");
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+  else if (el.msRequestFullscreen) el.msRequestFullscreen();
+});
+
+// Ricerca
+document.getElementById("searchInput").addEventListener("input", function() {
+  const filter = this.value.toLowerCase();
+  const buttons = document.querySelectorAll("#channels button");
+  buttons.forEach(btn => {
+    const text = btn.textContent.toLowerCase();
+    btn.parentElement.style.display = text.includes(filter) ? "" : "none";
+  });
+});
+
+// Qui inserisci i dati veri generati dal tuo script python
+const realData = [
+  {
+    group: "Esempio Gruppo",
+    channels: [
+      {name: "Canale 1", url: "https://example.com/original1.php", type: "original"},
+      {name: "Canale 2", url: "https://thedaddy.click/embed/stream-9.php", type: "embed"},
+      {name: "Canale 3", url: "https://example.com/altro.php", type: "other"}
+    ]
+  }
+];
+
+// Inizializza la lista reale
+createChannelsList(realData);
+</script>
+
+</body>
+</html>
