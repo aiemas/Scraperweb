@@ -33,3 +33,4 @@ jobs:
         git add lista.html
         git commit -m "Aggiornamento automatico lista.html $(date -u +'%Y-%m-%d %H:%M:%S UTC')" || echo "Nessuna modifica"
         git push
+        
