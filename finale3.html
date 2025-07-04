@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lista Eventi Wiseplay</title>
+<style>
+body { font-family: sans-serif; margin: 20px; }
+input[type="text"] { width: 100%%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
+
+button {
+  margin: 3px;
+  padding: 6px 10px;
+  font-size: 14px;
+  display: inline-block;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-original { background-color: #4CAF50; color: white; }    /* verde */
+.btn-embed    { background-color: #2196F3; color: white; }    /* blu */
+.btn-other    { background-color: #f44336; color: white; }    /* rosso */
+
+h1 { margin-bottom: 20px; }
+h2 { margin-top: 30px; color: #333; }
+div { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<h1>Eventi Wiseplay (Lista Generata)</h1>
+
+<input type="text" id="searchInput" placeholder="Cerca canale/evento...">
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', function() {
+    const filter = searchInput.value.toLowerCase();
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+      const text = button.textContent.toLowerCase();
+      button.parentElement.style.display = text.includes(filter) ? '' : 'none';
+    });
+  });
+});
+</script>
+</body></html>
