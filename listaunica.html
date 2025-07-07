@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lista Eventi Wiseplay con Player</title>
+<style>
+body { font-family: sans-serif; margin: 20px; }
+input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
+
+button {
+  margin: 3px;
+  padding: 6px 10px;
+  font-size: 14px;
+  display: inline-block;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-original { background-color: #4CAF50; color: white; }    /* verde */
+.btn-embed    { background-color: #2196F3; color: white; }    /* blu */
+.btn-other    { background-color: #f44336; color: white; }    /* rosso */
+
+h1 { margin-bottom: 20px; }
+h2 { margin-top: 30px; color: #333; }
+div { margin-bottom: 10px; }
+
+#player-container {
+  margin-top: 30px;
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 480px;
+  background: black;
+  display: none;
+}
+
+#player {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+#fs-button, #unmute-button {
+  position: absolute;
+  top: 10px;
+  z-index: 10;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#fs-button { right: 60px; }
+#unmute-button { right: 10px; }
+</style>
+</head>
+<body>
+<h1>Eventi Wiseplay (Lista Generata)</h1>
+
+<input type="text" id="searchInput" placeholder="Cerca canale/evento...">
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', function() {
+    const filter = searchInput.value.toLowerCase();
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+      const text = button.textContent.toLowerCase();
+      button.parentElement.style.display = text.includes(filter) ? '' : 'none';
+    });
+  });
+});
+</script>
+
+<div id="player-container">
+  <iframe id="player" allowfullscreen muted></iframe>
+  <button id="fs-button" title="Fullscreen">Fullscreen</button>
+  <button id="unmute-button" title="Unmute">Unmute</button>
+</div>
+
+<script>
+function loadPlayer(url) {
+  const container = document.getElementById('player-container');
+  const iframe = document.getElementById('player');
+  iframe.src = url;
+  container.style.display = 'block';
+}
+
+// Fullscreen
+document.getElementById('fs-button').addEventListener('click', () => {
+  const el = document.getElementById('player-container');
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+  else if (el.msRequestFullscreen) el.msRequestFullscreen();
+});
+
+// Unmute attempt
+document.getElementById('unmute-button').addEventListener('click', () => {
+  const iframe = document.getElementById('player');
+  try {
+    const iframeWindow = iframe.contentWindow;
+    const videos = iframeWindow.document.getElementsByTagName('video');
+    for(let v of videos){
+      v.muted = false;
+      v.volume = 1.0;
+      v.play();
+    }
+  } catch(e) {
+    alert('Non è possibile togliere il muto automaticamente a causa delle restrizioni del browser.');
+  }
+});
+</script>
+
+</body>
+</html>
