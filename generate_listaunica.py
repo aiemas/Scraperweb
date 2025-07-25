@@ -1,10 +1,9 @@
 import requests
 import json
 
-# URL pubblica della tua lista JSON
+# URL della lista JSON
 url = "https://test34344.herokuapp.com/wise/testWise.php?numList=195&tkn=wise"
 
-# Scarica la pagina
 print(f"Scarico JSON da: {url}")
 response = requests.get(url)
 if response.status_code != 200:
@@ -19,14 +18,14 @@ except json.JSONDecodeError as e:
     print(f"Errore parsing JSON: {e}")
     exit(1)
 
-# Crea HTML
+# HTML iniziale con CSS, search e iframe
 html = """<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Lista Eventi Wiseplay</title>
+<title>Lista Unica Wiseplay</title>
 <style>
-body { font-family: sans-serif; margin: 20px; }
+body { font-family: sans-serif; margin: 20px; padding-bottom: 300px; }
 input[type="text"] { width: 100%%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
 
 button {
@@ -39,18 +38,27 @@ button {
   cursor: pointer;
 }
 
-.btn-original { background-color: #4CAF50; color: white; }    /* verde */
-.btn-embed    { background-color: #2196F3; color: white; }    /* blu */
-.btn-other    { background-color: #f44336; color: white; }    /* rosso */
+.btn-original { background-color: #4CAF50; color: white; }
+.btn-embed    { background-color: #2196F3; color: white; }
+.btn-other    { background-color: #f44336; color: white; }
 
 h1 { margin-bottom: 20px; }
 h2 { margin-top: 30px; color: #333; }
 div { margin-bottom: 10px; }
+
+#iframePlayer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%%;
+  height: 300px;
+  border: none;
+  z-index: 9999;
+}
 </style>
 </head>
 <body>
-<h1>Eventi Wiseplay (Lista Generata)</h1>
-
+<h1>Lista Unica Wiseplay</h1>
 <input type="text" id="searchInput" placeholder="Cerca canale/evento...">
 
 <script>
@@ -65,10 +73,14 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 });
+
+function playInIframe(url) {
+  document.getElementById('iframePlayer').src = url;
+}
 </script>
 """
 
-# Funzione ricorsiva per estrarre gruppi e canali, generando HTML direttamente
+# Estrazione dei gruppi e stazioni
 def process_groups(groups):
     global html
     for group in groups:
@@ -81,19 +93,24 @@ def process_groups(groups):
                 if "thedaddy.click/cast/" in url:
                     embed_url = url.replace("thedaddy.click/cast/", "thedaddy.click/embed/")
                     html += f'<div>\n'
-                    html += f'<button class="btn-original" onclick="window.open(\'{url}\', \'_blank\')">{name} (Originale)</button>\n'
-                    html += f'<button class="btn-embed" onclick="window.open(\'{embed_url}\', \'_blank\')">{name} (Embed)</button>\n'
+                    html += f'<button class="btn-original" onclick="playInIframe(\'{url}\')">{name} (Originale)</button>\n'
+                    html += f'<button class="btn-embed" onclick="playInIframe(\'{embed_url}\')">{name} (Embed)</button>\n'
                     html += f'</div>\n'
                 else:
                     html += f'<div>\n'
-                    html += f'<button class="btn-other" onclick="window.open(\'{url}\', \'_blank\')">{name}</button>\n'
+                    html += f'<button class="btn-other" onclick="playInIframe(\'{url}\')">{name}</button>\n'
                     html += f'</div>\n'
         if "groups" in group:
             process_groups(group["groups"])
 
 process_groups(data.get("groups", []))
 
-html += "</body></html>"
+# Aggiunta iframe player fisso in fondo
+html += """
+<iframe id="iframePlayer" src=""></iframe>
+</body>
+</html>
+"""
 
 # Scrivi su file
 with open("listaunica.html", "w", encoding="utf-8") as f:
