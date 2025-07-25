@@ -100,6 +100,15 @@ function toggleFullscreen() {
     iframe.msRequestFullscreen();
   }
 }
+
+function togglePlayer() {
+  const container = document.getElementById('playerContainer');
+  if (container.style.display === 'none') {
+    container.style.display = 'block';
+  } else {
+    container.style.display = 'none';
+  }
+}
 </script>
 """
 
@@ -128,11 +137,12 @@ def process_groups(groups):
 
 process_groups(data.get("groups", []))
 
-# Aggiunta iframe player fisso in fondo alla pagina
+# Aggiunta iframe player fisso in fondo alla pagina con pulsanti fullscreen e chiusura
 html += """
-<div id="playerContainer">
-  <button onclick="toggleFullscreen()" style="position:absolute; top:5px; right:10px; z-index:10000; padding:6px 10px; font-size:16px;">🔳 Fullscreen</button>
-  <iframe id="iframePlayer" src="" allowfullscreen></iframe>
+<div id="playerContainer" style="position: fixed; bottom: 0; left: 0; width: 100%; height: 35vh; background-color: black; z-index: 9999;">
+  <button onclick="toggleFullscreen()" style="position:absolute; top:5px; right:40px; z-index:10001; padding:6px 10px; font-size:16px;">🔳 Fullscreen</button>
+  <button id="closePlayerBtn" onclick="togglePlayer()" style="position:absolute; top:5px; right:10px; z-index:10001; padding:6px 10px; font-size:16px;">X</button>
+  <iframe id="iframePlayer" src="" allowfullscreen style="width: 100%; height: 100%; border:none;"></iframe>
 </div>
 
 </body>
