@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Lista Unica Wiseplay</title>
 <style>
-body { font-family: sans-serif; margin: 20px; padding-bottom: 300px; }
+body { font-family: sans-serif; margin: 20px; padding-bottom: 60vh; }
 input[type="text"] { width: 100%%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
 
 button {
@@ -25,14 +25,20 @@ h1 { margin-bottom: 20px; }
 h2 { margin-top: 30px; color: #333; }
 div { margin-bottom: 10px; }
 
-#iframePlayer {
+#playerContainer {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%%;
-  height: 300px;
-  border: none;
+  height: 60vh;
+  background-color: black;
   z-index: 9999;
+}
+
+#iframePlayer {
+  width: 100%%;
+  height: 100%%;
+  border: none;
 }
 </style>
 </head>
@@ -55,6 +61,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function playInIframe(url) {
   document.getElementById('iframePlayer').src = url;
+}
+
+function toggleFullscreen() {
+  const iframe = document.getElementById('iframePlayer');
+  if (iframe.requestFullscreen) {
+    iframe.requestFullscreen();
+  } else if (iframe.webkitRequestFullscreen) {
+    iframe.webkitRequestFullscreen();
+  } else if (iframe.mozRequestFullScreen) {
+    iframe.mozRequestFullScreen();
+  } else if (iframe.msRequestFullscreen) {
+    iframe.msRequestFullscreen();
+  }
 }
 </script>
 <h2>Eventi SportsOnline</h2>
@@ -5203,6 +5222,10 @@ function playInIframe(url) {
 </div>
 <h2>Lista by Nero</h2>
 
-<iframe id="iframePlayer" src=""></iframe>
+<div id="playerContainer">
+  <button onclick="toggleFullscreen()" style="position:absolute; top:5px; right:10px; z-index:10000; padding:6px 10px; font-size:16px;">🔳 Fullscreen</button>
+  <iframe id="iframePlayer" src="" allowfullscreen></iframe>
+</div>
+
 </body>
 </html>
