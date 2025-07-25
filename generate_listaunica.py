@@ -26,7 +26,7 @@ html = """<!DOCTYPE html>
 <title>Lista Unica Wiseplay</title>
 <style>
 body { font-family: sans-serif; margin: 20px; padding-bottom: 60vh; }
-input[type="text"] { width: 100%%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
+input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
 
 button {
   margin: 3px;
@@ -50,15 +50,15 @@ div { margin-bottom: 10px; }
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%%;
+  width: 100%;
   height: 35vh;
   background-color: black;
   z-index: 9999;
 }
 
 #iframePlayer {
-  width: 100%%;
-  height: 100%%;
+  width: 100%;
+  height: 100%;
   border: none;
 }
 </style>
@@ -66,6 +66,10 @@ div { margin-bottom: 10px; }
 <body>
 <h1>Lista Unica Wiseplay</h1>
 <input type="text" id="searchInput" placeholder="Cerca canale/evento...">
+
+<!-- INIZIO iframe calendario daddy live -->
+<iframe src="https://watchit.my/iframe.php?u=L3NjaGVkdWxlLnBocA" width="100%" height="1500px" allowfullscreen loading="lazy" title="Match Schedule" style="border:none;"></iframe>
+<!-- FINE iframe calendario daddy live -->
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
