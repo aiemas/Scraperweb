@@ -18,14 +18,14 @@ except json.JSONDecodeError as e:
     print(f"Errore parsing JSON: {e}")
     exit(1)
 
-# HTML iniziale con CSS, search e iframe
+# HTML iniziale con CSS, search, JS e stile player
 html = """<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Lista Unica Wiseplay</title>
 <style>
-body { font-family: sans-serif; margin: 20px; padding-bottom: 300px; }
+body { font-family: sans-serif; margin: 20px; padding-bottom: 60vh; }
 input[type="text"] { width: 100%%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
 
 button {
@@ -46,14 +46,20 @@ h1 { margin-bottom: 20px; }
 h2 { margin-top: 30px; color: #333; }
 div { margin-bottom: 10px; }
 
-#iframePlayer {
+#playerContainer {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%%;
-  height: 300px;
-  border: none;
+  height: 60vh;
+  background-color: black;
   z-index: 9999;
+}
+
+#iframePlayer {
+  width: 100%%;
+  height: 100%%;
+  border: none;
 }
 </style>
 </head>
@@ -77,10 +83,23 @@ document.addEventListener("DOMContentLoaded", function() {
 function playInIframe(url) {
   document.getElementById('iframePlayer').src = url;
 }
+
+function toggleFullscreen() {
+  const iframe = document.getElementById('iframePlayer');
+  if (iframe.requestFullscreen) {
+    iframe.requestFullscreen();
+  } else if (iframe.webkitRequestFullscreen) {
+    iframe.webkitRequestFullscreen();
+  } else if (iframe.mozRequestFullScreen) {
+    iframe.mozRequestFullScreen();
+  } else if (iframe.msRequestFullscreen) {
+    iframe.msRequestFullscreen();
+  }
+}
 </script>
 """
 
-# Estrazione dei gruppi e stazioni
+# Funzione per processare gruppi e canali
 def process_groups(groups):
     global html
     for group in groups:
@@ -105,7 +124,18 @@ def process_groups(groups):
 
 process_groups(data.get("groups", []))
 
-# Scrivi su file
+# Aggiunta iframe player fisso in fondo alla pagina
+html += """
+<div id="playerContainer">
+  <button onclick="toggleFullscreen()" style="position:absolute; top:5px; right:10px; z-index:10000; padding:6px 10px; font-size:16px;">🔳 Fullscreen</button>
+  <iframe id="iframePlayer" src="" allowfullscreen></iframe>
+</div>
+
+</body>
+</html>
+"""
+
+# Scrive il file HTML
 with open("listaunica.html", "w", encoding="utf-8") as f:
     f.write(html)
 
