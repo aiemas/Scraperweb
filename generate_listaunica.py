@@ -105,13 +105,6 @@ def process_groups(groups):
 
 process_groups(data.get("groups", []))
 
-# Aggiunta iframe player fisso in fondo
-html += """
-<iframe id="iframePlayer" src=""></iframe>
-</body>
-</html>
-"""
-
 # Scrivi su file
 with open("listaunica.html", "w", encoding="utf-8") as f:
     f.write(html)
