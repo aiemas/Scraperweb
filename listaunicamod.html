@@ -10,12 +10,20 @@
       padding: 10px;
       background: #f8f8f8;
     }
-    #iframePlayer {
-      width: 100%;
-      height: 50vh;
-      border: none;
-      margin-top: 10px;
+
+    h1, h2 {
+      margin: 10px 0;
     }
+
+    #searchInput {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
     .btn-other {
       margin: 5px 0;
       padding: 10px;
@@ -27,29 +35,30 @@
       border-radius: 4px;
       cursor: pointer;
     }
+
     .btn-other:hover {
       background-color: #0056b3;
     }
-    input#searchInput {
+
+    #iframePlayer {
       width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
+      height: 50vh;
+      border: none;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
 
   <h1>Lista Unica Wiseplay</h1>
+
   <input type="text" id="searchInput" placeholder="Cerca canale/evento...">
 
   <!-- Calendario DaddyLive -->
   <iframe 
     src="https://watchit.my/iframe.php?u=L3NjaGVkdWxlLnBocA" 
     width="100%" 
-    height="2000px" 
+    height="600px" 
     allowfullscreen 
     loading="lazy" 
     title="Match Schedule" 
@@ -57,7 +66,6 @@
   </iframe>
 
   <h2>Eventi SportsOnline</h2>
-  <h2>SATURDAY</h2>
 
   <div>
     <button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd1.php')">13:30 Liverpool vs Milan</button>
@@ -67,7 +75,7 @@
     <button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br2.php')">13:30 Liverpool vs Milan</button>
   </div>
 
-  <!-- Player iframe -->
+  <!-- Player -->
   <iframe 
     id="iframePlayer" 
     src="" 
@@ -76,10 +84,10 @@
   </iframe>
 
   <script>
-    // Filtro canali
-    document.addEventListener("DOMContentLoaded", function() {
+    // Filtro ricerca
+    document.addEventListener("DOMContentLoaded", function () {
       const searchInput = document.getElementById('searchInput');
-      searchInput.addEventListener('input', function() {
+      searchInput.addEventListener('input', function () {
         const filter = searchInput.value.toLowerCase();
         const buttons = document.querySelectorAll('.btn-other');
         buttons.forEach(button => {
@@ -89,7 +97,7 @@
       });
     });
 
-    // Riproduci nell'iframe
+    // Cambia il contenuto dell'iframe
     function playInIframe(url) {
       document.getElementById('iframePlayer').src = url;
     }
