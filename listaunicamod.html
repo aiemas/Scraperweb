@@ -1,107 +1,361 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lista Unica Wiseplay</title>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 10px;
-      background: #f8f8f8;
-    }
+    body { font-family: sans-serif; margin: 20px; padding-bottom: 60vh; }
+    input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
 
-    h1, h2 {
-      margin: 10px 0;
-    }
-
-    #searchInput {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-
-    .btn-other {
-      margin: 5px 0;
-      padding: 10px;
-      font-size: 16px;
-      width: 100%;
-      background-color: #007bff;
-      color: white;
+    button {
+      margin: 3px;
+      padding: 6px 10px;
+      font-size: 14px;
+      display: inline-block;
       border: none;
-      border-radius: 4px;
+      border-radius: 5px;
       cursor: pointer;
     }
 
-    .btn-other:hover {
-      background-color: #0056b3;
+    .btn-original { background-color: #4CAF50; color: white; }
+    .btn-embed    { background-color: #2196F3; color: white; }
+    .btn-other    { background-color: #f44336; color: white; }
+
+    h1 { margin-bottom: 20px; }
+    h2 { margin-top: 30px; color: #333; }
+    div { margin-bottom: 10px; }
+
+    #playerContainer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 35vh;
+      background-color: black;
+      z-index: 9999;
     }
 
     #iframePlayer {
       width: 100%;
-      height: 50vh;
+      height: 100%;
       border: none;
-      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-
   <h1>Lista Unica Wiseplay</h1>
-
   <input type="text" id="searchInput" placeholder="Cerca canale/evento...">
 
-  <!-- Calendario DaddyLive -->
-  <iframe 
-    src="https://watchit.my/iframe.php?u=L3NjaGVkdWxlLnBocA" 
-    width="100%" 
-    height="600px" 
-    allowfullscreen 
-    loading="lazy" 
-    title="Match Schedule" 
-    style="border:none;">
-  </iframe>
-
-  <h2>Eventi SportsOnline</h2>
-
-  <div>
-    <button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd1.php')">13:30 Liverpool vs Milan</button>
-    <button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd7.php')">13:30 Liverpool vs Milan</button>
-    <button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd3.php')">13:30 Liverpool vs Milan</button>
-    <button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv2.php')">13:30 Liverpool vs Milan</button>
-    <button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br2.php')">13:30 Liverpool vs Milan</button>
+  <div id="playerContainer">
+    <iframe id="iframePlayer" allow="autoplay; fullscreen" allowfullscreen></iframe>
   </div>
 
-  <!-- Player -->
-  <iframe 
-    id="iframePlayer" 
-    src="" 
-    allow="autoplay; fullscreen" 
-    allowfullscreen>
-  </iframe>
-
   <script>
-    // Filtro ricerca
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
       const searchInput = document.getElementById('searchInput');
-      searchInput.addEventListener('input', function () {
+      searchInput.addEventListener('input', function() {
         const filter = searchInput.value.toLowerCase();
-        const buttons = document.querySelectorAll('.btn-other');
+        const buttons = document.querySelectorAll('button');
         buttons.forEach(button => {
           const text = button.textContent.toLowerCase();
-          button.style.display = text.includes(filter) ? '' : 'none';
+          button.parentElement.style.display = text.includes(filter) ? '' : 'none';
         });
       });
     });
 
-    // Cambia il contenuto dell'iframe
     function playInIframe(url) {
       document.getElementById('iframePlayer').src = url;
     }
-  </script>
 
-</body>
-</html>
+    function toggleFullscreen() {
+      const iframe = document.getElementById('iframePlayer');
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if (iframe.webkitRequestFullscreen) {
+        iframe.webkitRequestFullscreen();
+      } else if (iframe.mozRequestFullScreen) {
+        iframe.mozRequestFullScreen();
+      } else if (iframe.msRequestFullscreen) {
+        iframe.msRequestFullscreen();
+      }
+    }
+
+    function togglePlayer() {
+      const container = document.getElementById('playerContainer');
+      container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    }
+  </script>
+  <h2>Eventi SportsOnline</h2>
+<h2>SATURDAY</h2>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd1.php')">13:30 Liverpool vs Milan</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd7.php')">13:30 Liverpool vs Milan</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd3.php')">13:30 Liverpool vs Milan</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv2.php')">13:30 Liverpool vs Milan</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br2.php')">13:30 Liverpool vs Milan</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd2.php')">15:00 St. Pauli vs Nice</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd10.php')">15:00 Rangers vs Middlesbrough</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd11.php')">15:00 AZ vs Olympiakos Piraeus</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd5.php')">15:00 F1: Belgian Grand Prix - Qualifying</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd8.php')">15:00 F1: Belgian Grand Prix - Qualifying</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br4.php')">15:00 F1: Belgian Grand Prix - Qualifying</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd6.php')">15:30 Stuttgart vs Celta de Vigo</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd1.php')">16:00 Luton Town vs Tottenham Hotspur</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv2.php')">16:00 Luton Town vs Tottenham Hotspur</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd9.php')">16:00 Stoke City vs Wolverhampton Wanderers</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv5.php')">16:00 Stoke City vs Wolverhampton Wanderers</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd2.php')">17:30 Schalke 04 vs Sevilla</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd3.php')">17:30 Schalke 04 vs Sevilla</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd10.php')">17:30 Schalke 04 vs Sevilla</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv4.php')">17:30 Schalke 04 vs Sevilla</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd9.php')">18:00 Kaiserslautern vs Roma</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd7.php')">18:00 Kaiserslautern vs Roma</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv2.php')">18:00 Kaiserslautern vs Roma</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br2.php')">18:00 Kaiserslautern vs Roma</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd8.php')">19:00 Napoli vs Brest</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd5.php')">19:00 UFC Fight Night: Prelims</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/btv.php')">21:00 Benfica vs Fenerbahçe</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd6.php')">21:00 Fulham vs Nottingham Forest</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br2.php')">21:00 Fulham vs Nottingham Forest</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd5.php')">21:00 UFC Fight Night: Robert Whittaker vs Reinier de Ridder</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd1.php')">22:00 Everton vs AFC Bournemouth</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/eleven1.php')">22:00 Everton vs AFC Bournemouth</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br6.php')">22:00 Everton vs AFC Bournemouth</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd10.php')">23:00 Boyacá Chicó vs Deportivo Pasto</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br3.php')">23:30 Botafogo vs Corinthians</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br4.php')">23:30 Sport Recife vs Santos</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br5.php')">23:30 Fortaleza vs RB Bragantino</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd1.php')">01:00 Manchester United vs West Ham United</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/eleven1.php')">01:00 Manchester United vs West Ham United</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br6.php')">01:00 Manchester United vs West Ham United</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd3.php')">01:00 Eintracht Frankfurt vs Aston Villa</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv1.php')">01:00 ATP World Tour 500: Washington</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd5.php')">01:00 MLB: Guardians vs Royals</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd10.php')">01:10 Once Caldas vs Junior</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd2.php')">01:15 Inter Miami vs Cincinnati</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd6.php')">01:15 Inter Miami vs Cincinnati</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br2.php')">01:30 CRB vs Novorizontino</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br1.php')">02:00 Palmeiras vs Grêmio</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv4.php')">02:15 Racing Club vs Estudiantes</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd9.php')">03:00 Toluca vs Tigres UANL</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd10.php')">03:20 América de Cali vs Rionegro Águilas</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd9.php')">05:05 Necaxa vs América</button>
+</div>
+
+<h2>SUNDAY</h2>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd6.php')">12:00 Vissel Kobe vs Barcelona</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd3.php')">12:00 Vissel Kobe vs Barcelona</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd1.php')">13:30 Arsenal vs Newcastle United</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv2.php')">13:30 Arsenal vs Newcastle United</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br2.php')">13:30 Arsenal vs Newcastle United</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd4.php')">13:30 Anderlecht vs Westerlo</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/eleven1.php')">13:30 Anderlecht vs Westerlo</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd5.php')">15:00 F1: Belgian Grand Prix</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd8.php')">15:00 F1: Belgian Grand Prix</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br4.php')">15:00 F1: Belgian Grand Prix</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd2.php')">16:00 St. Mirren vs Ayr United</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd10.php')">16:00 Mallorca vs Al Ahli</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd4.php')">16:00 OH Leuven vs Sporting Charleroi</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd9.php')">17:30 CFR Cluj vs SCM Argeşul Piteşti</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd3.php')">18:00 Bochum vs Bayer Leverkusen</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv5.php')">18:00 Bochum vs Bayer Leverkusen</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd4.php')">18:30 Club Brugge vs Genk</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/eleven1.php')">18:30 Club Brugge vs Genk</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd11.php')">19:00 Porto vs Twente</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv1.php')">19:00 Porto vs Twente</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd9.php')">20:30 Oţelul vs Dinamo Bucureşti</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd5.php')">20:30 World Matchplay Darts: Final</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd2.php')">21:00 England W vs Spain W</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd6.php')">21:00 England W vs Spain W</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv2.php')">21:00 England W vs Spain W</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br2.php')">21:00 Coritiba vs Amazonas</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br6.php')">21:00 São Paulo vs Fluminense</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br5.php')">21:00 Cruzeiro vs Ceará</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd10.php')">21:00 Talleres Córdoba vs Godoy Cruz</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd5.php')">23:00 ATP World Tour 500: Washington - Final</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv1.php')">23:00 ATP World Tour 500: Washington - Final</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd10.php')">23:30 Huracán vs Boca Juniors</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv1.php')">23:30 Huracán vs Boca Juniors</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br3.php')">23:30 Internacional vs Vasco da Gama</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br4.php')">23:30 Bahia vs Juventude</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/hd/hd11.php')">01:30 River Plate vs San Lorenzo</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/pt/sporttv1.php')">01:30 River Plate vs San Lorenzo</button>
+</div>
+<div>
+<button class="btn-other" onclick="playInIframe('https://sportzonline.si/channels/bra/br1.php')">01:30 Flamengo vs Atlético-MG</button>
+</div>
