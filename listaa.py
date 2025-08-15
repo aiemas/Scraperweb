@@ -1,9 +1,24 @@
 import requests
 import json
+import re
+from datetime import datetime
+
+# Funzione per creare ID validi da stringhe
+def make_id(s):
+    return re.sub(r'\W+', '_', s)
+
+# Funzione per filtrare solo il giorno odierno
+def is_today(day_string):
+    try:
+        # Rimuove suffissi come "th", "st", "nd", "rd"
+        clean_str = day_string.replace("th","").replace("st","").replace("nd","").replace("rd","")
+        day_dt = datetime.strptime(clean_str, "%A %d %b %Y")
+        return day_dt.date() == datetime.today().date()
+    except:
+        return False
 
 # URL lista eventi Daddy
 url_daddy = "https://thedaddy.dad/schedule/schedule-generated.php"
-
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
     "Referer": "https://thedaddy.dad/"
@@ -21,7 +36,7 @@ except json.JSONDecodeError as e:
     print(f"Errore parsing JSON Daddy: {e}")
     exit(1)
 
-# HTML iniziale con stile per accordion
+# HTML iniziale con CSS e JS
 html = """<!DOCTYPE html>
 <html>
 <head>
@@ -29,8 +44,8 @@ html = """<!DOCTYPE html>
 <title>Lista Eventi Daddy</title>
 <style>
 body { font-family: sans-serif; margin: 20px; padding-bottom: 60vh; }
-h1, h2 { margin-bottom: 10px; }
-h2 { cursor: pointer; }
+h1, h2, h3, h4 { margin-bottom: 10px; }
+h4 { cursor: pointer; }
 div.event { margin-bottom: 10px; }
 div.channels { margin-left: 20px; display: none; }
 button { margin: 3px; padding: 6px 10px; font-size: 14px; border: none; border-radius: 5px; cursor: pointer; }
@@ -40,10 +55,12 @@ button { margin: 3px; padding: 6px 10px; font-size: 14px; border: none; border-r
 </style>
 </head>
 <body>
-<h1>Lista Eventi Daddy</h1>
+<h1>Lista Eventi Daddy - Solo Giorno Odierno</h1>
 <script>
 function playInIframe(url) {
-    document.getElementById('iframePlayer').src = url;
+    const iframe = document.getElementById('iframePlayer');
+    iframe.src = url;
+    iframe.contentWindow.location.reload();
 }
 function toggleFullscreen() {
     const iframe = document.getElementById('iframePlayer');
@@ -65,8 +82,10 @@ function toggleChannels(id) {
 </script>
 """
 
-# Generazione eventi
+# Generazione eventi solo odierni
 for day, categories in data_daddy.items():
+    if not is_today(day):
+        continue  # salta giorni diversi da oggi
     html += f"<h2>{day}</h2>\n"
     for category_name, events in categories.items():
         html += f"<h3>{category_name}</h3>\n"
@@ -79,7 +98,9 @@ for day, categories in data_daddy.items():
                 all_channels.extend(event["channels"])
             if "channels2" in event:
                 all_channels.extend(event["channels2"])
-            event_id = f"event_{day}_{idx_event}".replace(" ", "_").replace(":", "_")
+            if not all_channels:
+                continue
+            event_id = make_id(f"{day}_{idx_event}")
             html += f'<div class="event">'
             html += f'<h4 onclick="toggleChannels(\'{event_id}\')">{event_time} - {event_name}</h4>\n'
             html += f'<div class="channels" id="{event_id}">\n'
