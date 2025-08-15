@@ -1,33 +1,32 @@
-name: Update Lista Unica
+name: listaa
 
 on:
   schedule:
-    - cron: '0 5 * * *'  # ogni giorno alle 5:00 UTC
+    - cron: "0 * * * *"  # ogni ora
   workflow_dispatch:
 
 jobs:
-  update-listaunica:
+  build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
-      - name: Install requests
+      - name: Install dependencies
         run: pip install requests
 
-      - name: Generate listaunica.html
-        run: python listaa.py
+      - name: Run script
+        run: python lista_daddy.py
 
-      - name: Commit and push changes
+      - name: Commit and push
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add listaunica.html
-          git commit -m "Update listaunica.html" || echo "No changes to commit"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add listaa.html
+          git commit -m "Aggiornamento listaa"
           git push
