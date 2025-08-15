@@ -10,14 +10,16 @@ def make_id(s):
 # Funzione per filtrare solo il giorno odierno
 def is_today(day_string):
     try:
-        clean_str = day_string
+        # Prendi solo la parte prima del trattino
+        date_part = day_string.split("-")[0].strip()  # es. "Friday 15th Aug 2025"
+        # Rimuovi suffissi
         for suf in ["th","st","nd","rd",","]:
-            clean_str = clean_str.replace(suf,"")
-        # Prendi solo giorno, mese, anno (ultimo 3 elementi)
-        parts = clean_str.strip().split()
+            date_part = date_part.replace(suf,"")
+        # Estrai solo giorno mese anno (ultimi 3 elementi)
+        parts = date_part.strip().split()
         if len(parts) < 3:
             return False
-        day_month_year = " ".join(parts[-3:])  # es. "14 Aug 2025"
+        day_month_year = " ".join(parts[-3:])  # "15 Aug 2025"
         day_dt = datetime.strptime(day_month_year, "%d %b %Y")
         return day_dt.date() == datetime.today().date()
     except:
