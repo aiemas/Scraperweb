@@ -130,10 +130,10 @@ html += """
 """
 
 # Salvataggio HTML
-with open("listaunica.html", "w", encoding="utf-8") as f:
+with open("listaa.html", "w", encoding="utf-8") as f:
     f.write(html)
 
-print("File 'listaunica.html' creato con successo!")  border-radius: 5px;
+print("File 'listaa.html' creato con successo!")
   cursor: pointer;
 }
 
