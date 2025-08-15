@@ -134,10 +134,9 @@ for day, categories in data_daddy.items():
             for idx_ch, ch in enumerate(all_channels, start=1):
                 ch_name = ch.get("channel_name", "Senza nome")
                 ch_id = ch.get("channel_id", "")
-                # Usa lo stesso formato di link funzionante nello script originale
-                stream_url = f"https://thedaddy.dad/embed/{ch_id}"
+                # Assuming ch_id contains the identifier for the stream, like '600'
+                stream_url = f"https://thedaddy.dad/embed/stream-{ch_id}.php"
                 html += f'<button class="btn-original" onclick="playInIframe(\'{stream_url}\')">{ch_name} [{idx_ch}]</button>\n'
-            html += '</div></div>\n'
 
 # Player fisso
 html += """
