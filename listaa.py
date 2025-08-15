@@ -15,7 +15,7 @@ def is_today(day_string):
         # Rimuovi suffissi
         for suf in ["th","st","nd","rd",","]:
             date_part = date_part.replace(suf,"")
-        # Estrai solo giorno mese anno (ultimi 3 elementi)
+        # Estrai giorno mese anno
         parts = date_part.strip().split()
         if len(parts) < 3:
             return False
@@ -44,7 +44,7 @@ except json.JSONDecodeError as e:
     print(f"Errore parsing JSON Daddy: {e}")
     exit(1)
 
-# HTML iniziale con CSS e JS
+# HTML iniziale
 html = """<!DOCTYPE html>
 <html>
 <head>
@@ -52,24 +52,42 @@ html = """<!DOCTYPE html>
 <title>Lista Eventi Daddy</title>
 <style>
 body { font-family: sans-serif; margin: 20px; padding-bottom: 60vh; }
+input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
+
 h1, h2, h3, h4 { margin-bottom: 10px; }
 h4 { cursor: pointer; }
+
 div.event { margin-bottom: 10px; }
 div.channels { margin-left: 20px; display: none; }
+
 button { margin: 3px; padding: 6px 10px; font-size: 14px; border: none; border-radius: 5px; cursor: pointer; }
 .btn-original { background-color: #4CAF50; color: white; }
+
 #playerContainer { position: fixed; bottom: 0; left: 0; width: 100%; height: 35vh; background-color: black; z-index: 9999; }
 #iframePlayer { width: 100%; height: 100%; border: none; }
 </style>
 </head>
 <body>
 <h1>Lista Eventi Daddy - Solo Giorno Odierno</h1>
+<input type="text" id="searchInput" placeholder="Cerca evento o canale...">
+
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function() {
+        const filter = searchInput.value.toLowerCase();
+        const events = document.querySelectorAll('div.event');
+        events.forEach(eventDiv => {
+            const text = eventDiv.textContent.toLowerCase();
+            eventDiv.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+});
+
 function playInIframe(url) {
-    const iframe = document.getElementById('iframePlayer');
-    iframe.src = url;
-    iframe.contentWindow.location.reload();
+    document.getElementById('iframePlayer').src = url;
 }
+
 function toggleFullscreen() {
     const iframe = document.getElementById('iframePlayer');
     if (iframe.requestFullscreen) { iframe.requestFullscreen();
@@ -77,11 +95,13 @@ function toggleFullscreen() {
     } else if (iframe.mozRequestFullScreen) { iframe.mozRequestFullScreen();
     } else if (iframe.msRequestFullscreen) { iframe.msRequestFullscreen(); }
 }
+
 function togglePlayer() {
     const container = document.getElementById('playerContainer');
     if (container.style.display === 'none') { container.style.display = 'block';
     } else { container.style.display = 'none'; }
 }
+
 function toggleChannels(id) {
     const elem = document.getElementById(id);
     if (elem.style.display === 'none') { elem.style.display = 'block';
@@ -100,7 +120,6 @@ for day, categories in data_daddy.items():
         for idx_event, event in enumerate(events, start=1):
             event_name = event.get("event", "Senza nome")
             event_time = event.get("time", "")
-            # Unisco channels e channels2
             all_channels = []
             if "channels" in event:
                 all_channels.extend(event["channels"])
@@ -115,7 +134,8 @@ for day, categories in data_daddy.items():
             for idx_ch, ch in enumerate(all_channels, start=1):
                 ch_name = ch.get("channel_name", "Senza nome")
                 ch_id = ch.get("channel_id", "")
-                stream_url = f"https://thedaddy.dad/embed/{ch_id}"
+                # Usa lo stesso formato di link funzionante nello script originale
+                stream_url = f"https://thedaddy.click/embed/{ch_id}"
                 html += f'<button class="btn-original" onclick="playInIframe(\'{stream_url}\')">{ch_name} [{idx_ch}]</button>\n'
             html += '</div></div>\n'
 
