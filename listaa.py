@@ -1,8 +1,8 @@
 import requests
 import json
 
-# URL della nuova lista JSON
-url = "https://thedaddy.dad/schedule/schedule-generated.php"
+# URL lista eventi Daddy
+url_daddy = "https://thedaddy.dad/schedule/schedule-generated.php"
 
 # Headers per simulare un browser
 headers = {
@@ -10,24 +10,24 @@ headers = {
     "Referer": "https://thedaddy.dad/"
 }
 
-print(f"Scarico JSON da: {url}")
-response = requests.get(url, headers=headers)
+print(f"Scarico JSON Daddy da: {url_daddy}")
+response = requests.get(url_daddy, headers=headers)
 if response.status_code != 200:
     print(f"Errore: risposta HTTP {response.status_code}")
     exit(1)
 
 try:
-    data = response.json()
+    data_daddy = response.json()
 except json.JSONDecodeError as e:
-    print(f"Errore parsing JSON: {e}")
+    print(f"Errore parsing JSON Daddy: {e}")
     exit(1)
 
-# HTML iniziale
+# HTML iniziale combinato
 html = """<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Lista Eventi Daddy</title>
+<title>Lista Eventi e Wiseplay</title>
 <style>
 body { font-family: sans-serif; margin: 20px; padding-bottom: 60vh; }
 input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
@@ -41,6 +41,8 @@ button {
   cursor: pointer;
 }
 .btn-original { background-color: #4CAF50; color: white; }
+.btn-embed    { background-color: #2196F3; color: white; }
+.btn-other    { background-color: #f44336; color: white; }
 h1 { margin-bottom: 20px; }
 h2 { margin-top: 30px; color: #333; }
 h3 { margin-top: 15px; color: #666; }
@@ -55,8 +57,9 @@ div { margin-bottom: 10px; }
 </style>
 </head>
 <body>
-<h1>Lista Eventi Daddy</h1>
+<h1>Lista Eventi e Wiseplay</h1>
 <input type="text" id="searchInput" placeholder="Cerca evento o canale...">
+
 <script>
 document.addEventListener("DOMContentLoaded", function() {
   const searchInput = document.getElementById('searchInput');
@@ -69,149 +72,64 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 });
+
 function playInIframe(url) {
   document.getElementById('iframePlayer').src = url;
 }
 function toggleFullscreen() {
   const iframe = document.getElementById('iframePlayer');
-  if (iframe.requestFullscreen) {
-    iframe.requestFullscreen();
-  } else if (iframe.webkitRequestFullscreen) {
-    iframe.webkitRequestFullscreen();
-  } else if (iframe.mozRequestFullScreen) {
-    iframe.mozRequestFullScreen();
-  } else if (iframe.msRequestFullscreen) {
-    iframe.msRequestFullscreen();
-  }
+  if (iframe.requestFullscreen) { iframe.requestFullscreen();
+  } else if (iframe.webkitRequestFullscreen) { iframe.webkitRequestFullscreen();
+  } else if (iframe.mozRequestFullScreen) { iframe.mozRequestFullScreen();
+  } else if (iframe.msRequestFullscreen) { iframe.msRequestFullscreen(); }
 }
 function togglePlayer() {
   const container = document.getElementById('playerContainer');
-  if (container.style.display === 'none') {
-    container.style.display = 'block';
-  } else {
-    container.style.display = 'none';
-  }
+  if (container.style.display === 'none') { container.style.display = 'block';
+  } else { container.style.display = 'none'; }
 }
 </script>
 """
 
-# Parsing nuovo formato con channels e channels2
-for day, categories in data.items():
+# ========================
+# Sezione 1: Lista Eventi Daddy
+# ========================
+html += "<h2>Eventi Daddy</h2>\n"
+for day, categories in data_daddy.items():
     html += f"<h2>{day}</h2>\n"
     for category_name, events in categories.items():
         html += f"<h3>{category_name}</h3>\n"
         for event in events:
             event_name = event.get("event", "Senza nome")
             event_time = event.get("time", "")
-            
-            # Unisco channels e channels2
             all_channels = []
             if "channels" in event:
                 all_channels.extend(event["channels"])
             if "channels2" in event:
                 all_channels.extend(event["channels2"])
-            
-            # Genero pulsanti
             for idx, ch in enumerate(all_channels, start=1):
                 ch_name = ch.get("channel_name", "Senza nome")
                 ch_id = ch.get("channel_id", "")
                 stream_url = f"https://thedaddy.dad/embed/{ch_id}"
                 html += f'<div><button class="btn-original" onclick="playInIframe(\'{stream_url}\')">{event_time} - {event_name} ({ch_name}) [{idx}]</button></div>\n'
 
-# Player fisso in fondo
-html += """
-<div id="playerContainer">
-  <button onclick="toggleFullscreen()" style="position:absolute; top:5px; right:40px; z-index:10001;">🔳 Fullscreen</button>
-  <button onclick="togglePlayer()" style="position:absolute; top:5px; right:10px; z-index:10001;">X</button>
-  <iframe id="iframePlayer" src="" allowfullscreen></iframe>
-</div>
-</body>
-</html>
-"""
+# ========================
+# Sezione 2: Lista Wiseplay (gruppi e stazioni)
+# ========================
+# URL lista Wiseplay
+url_wise = "https://test34344.herokuapp.com/wise/testWise.php?numList=195&tkn=wise"
+print(f"Scarico JSON Wise da: {url_wise}")
+response = requests.get(url_wise)
+if response.status_code != 200:
+    print(f"Errore: risposta HTTP {response.status_code}")
+    exit(1)
 
-# Salvataggio HTML
-with open("listaa.html", "w", encoding="utf-8") as f:
-    f.write(html)
+try:
+    data_wise = response.json()
+except json.JSONDecodeError as e:
+    print(f"Errore parsing JSON Wise: {e}")
+    exit(1)
 
-print("File 'listaa.html' creato con successo!")
-  cursor: pointer;
-}
-
-.btn-original { background-color: #4CAF50; color: white; }
-.btn-embed    { background-color: #2196F3; color: white; }
-.btn-other    { background-color: #f44336; color: white; }
-
-h1 { margin-bottom: 20px; }
-h2 { margin-top: 30px; color: #333; }
-div { margin-bottom: 10px; }
-
-#playerContainer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 35vh;
-  background-color: black;
-  z-index: 9999;
-}
-
-#iframePlayer {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-</style>
-</head>
-<body>
-<h1>Lista Unica Wiseplay</h1>
-<input type="text" id="searchInput" placeholder="Cerca canale/evento...">
-
-<!-- INIZIO iframe calendario daddy live -->
-<iframe src="https://watchit.my/iframe.php?u=L3NjaGVkdWxlLnBocA" width="100%" height="2000px" allowfullscreen loading="lazy" title="Match Schedule" style="border:none;"></iframe>
-<!-- FINE iframe calendario daddy live -->
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const searchInput = document.getElementById('searchInput');
-  searchInput.addEventListener('input', function() {
-    const filter = searchInput.value.toLowerCase();
-    const buttons = document.querySelectorAll('button');
-    buttons.forEach(button => {
-      const text = button.textContent.toLowerCase();
-      button.parentElement.style.display = text.includes(filter) ? '' : 'none';
-    });
-  });
-});
-
-function playInIframe(url) {
-  document.getElementById('iframePlayer').src = url;
-}
-
-function toggleFullscreen() {
-  const iframe = document.getElementById('iframePlayer');
-  if (iframe.requestFullscreen) {
-    iframe.requestFullscreen();
-  } else if (iframe.webkitRequestFullscreen) {
-    iframe.webkitRequestFullscreen();
-  } else if (iframe.mozRequestFullScreen) {
-    iframe.mozRequestFullScreen();
-  } else if (iframe.msRequestFullscreen) {
-    iframe.msRequestFullscreen();
-  }
-}
-
-function togglePlayer() {
-  const container = document.getElementById('playerContainer');
-  if (container.style.display === 'none') {
-    container.style.display = 'block';
-  } else {
-    container.style.display = 'none';
-  }
-}
-</script>
-"""
-
-# Funzione per processare gruppi e canali
 def process_groups(groups):
     global html
     for group in groups:
@@ -234,21 +152,22 @@ def process_groups(groups):
         if "groups" in group:
             process_groups(group["groups"])
 
-process_groups(data.get("groups", []))
+process_groups(data_wise.get("groups", []))
 
-# Aggiunta iframe player fisso in fondo alla pagina con pulsanti fullscreen e chiusura
+# ========================
+# Player fisso in basso
+# ========================
 html += """
-<div id="playerContainer" style="position: fixed; bottom: 0; left: 0; width: 100%; height: 35vh; background-color: black; z-index: 9999;">
-  <button onclick="toggleFullscreen()" style="position:absolute; top:5px; right:40px; z-index:10001; padding:6px 10px; font-size:16px;">🔳 Fullscreen</button>
-  <button id="closePlayerBtn" onclick="togglePlayer()" style="position:absolute; top:5px; right:10px; z-index:10001; padding:6px 10px; font-size:16px;">X</button>
-  <iframe id="iframePlayer" src="" allowfullscreen style="width: 100%; height: 100%; border:none;"></iframe>
+<div id="playerContainer">
+  <button onclick="toggleFullscreen()" style="position:absolute; top:5px; right:40px; z-index:10001;">🔳 Fullscreen</button>
+  <button onclick="togglePlayer()" style="position:absolute; top:5px; right:10px; z-index:10001;">X</button>
+  <iframe id="iframePlayer" src="" allowfullscreen></iframe>
 </div>
-
 </body>
 </html>
 """
 
-# Scrive il file HTML
+# Salvataggio HTML
 with open("listaa.html", "w", encoding="utf-8") as f:
     f.write(html)
 
