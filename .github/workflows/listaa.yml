@@ -21,7 +21,7 @@ jobs:
         run: pip install requests
 
       - name: Run script
-        run: python lista_daddy.py
+        run: python listaa.py
 
       - name: Commit and push
         run: |
