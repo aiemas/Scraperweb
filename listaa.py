@@ -135,7 +135,7 @@ for day, categories in data_daddy.items():
                 ch_name = ch.get("channel_name", "Senza nome")
                 ch_id = ch.get("channel_id", "")
                 # Usa lo stesso formato di link funzionante nello script originale
-                stream_url = f"https://thedaddy.click/embed/{ch_id}"
+                stream_url = f"https://thedaddy.dad/embed/{ch_id}"
                 html += f'<button class="btn-original" onclick="playInIframe(\'{stream_url}\')">{ch_name} [{idx_ch}]</button>\n'
             html += '</div></div>\n'
 
