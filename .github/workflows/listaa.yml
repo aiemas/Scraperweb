@@ -2,7 +2,7 @@ name: listaa
 
 on:
   schedule:
-    - cron: "0 * * * *"  # ogni ora
+  
   workflow_dispatch:
 
 jobs:
