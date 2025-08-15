@@ -1,33 +1,36 @@
 import requests
 import json
 
-# URL della lista JSON
+# URL della nuova lista JSON
 url = "https://thedaddy.dad/schedule/schedule-generated.php"
 
+# Headers per simulare un browser
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    "Referer": "https://thedaddy.dad/"
+}
+
 print(f"Scarico JSON da: {url}")
-response = requests.get(url)
+response = requests.get(url, headers=headers)
 if response.status_code != 200:
     print(f"Errore: risposta HTTP {response.status_code}")
     exit(1)
 
-json_text = response.text
-
 try:
-    data = json.loads(json_text)
+    data = response.json()
 except json.JSONDecodeError as e:
     print(f"Errore parsing JSON: {e}")
     exit(1)
 
-# HTML iniziale con CSS, search, JS e stile player
+# HTML iniziale
 html = """<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Lista Unica Wiseplay</title>
+<title>Lista Eventi Daddy</title>
 <style>
 body { font-family: sans-serif; margin: 20px; padding-bottom: 60vh; }
 input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
-
 button {
   margin: 3px;
   padding: 6px 10px;
@@ -35,6 +38,102 @@ button {
   display: inline-block;
   border: none;
   border-radius: 5px;
+  cursor: pointer;
+}
+.btn-original { background-color: #4CAF50; color: white; }
+h1 { margin-bottom: 20px; }
+h2 { margin-top: 30px; color: #333; }
+h3 { margin-top: 15px; color: #666; }
+div { margin-bottom: 10px; }
+#playerContainer {
+  position: fixed; bottom: 0; left: 0; width: 100%; height: 35vh;
+  background-color: black; z-index: 9999;
+}
+#iframePlayer {
+  width: 100%; height: 100%; border: none;
+}
+</style>
+</head>
+<body>
+<h1>Lista Eventi Daddy</h1>
+<input type="text" id="searchInput" placeholder="Cerca evento o canale...">
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', function() {
+    const filter = searchInput.value.toLowerCase();
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+      const text = button.textContent.toLowerCase();
+      button.parentElement.style.display = text.includes(filter) ? '' : 'none';
+    });
+  });
+});
+function playInIframe(url) {
+  document.getElementById('iframePlayer').src = url;
+}
+function toggleFullscreen() {
+  const iframe = document.getElementById('iframePlayer');
+  if (iframe.requestFullscreen) {
+    iframe.requestFullscreen();
+  } else if (iframe.webkitRequestFullscreen) {
+    iframe.webkitRequestFullscreen();
+  } else if (iframe.mozRequestFullScreen) {
+    iframe.mozRequestFullScreen();
+  } else if (iframe.msRequestFullscreen) {
+    iframe.msRequestFullscreen();
+  }
+}
+function togglePlayer() {
+  const container = document.getElementById('playerContainer');
+  if (container.style.display === 'none') {
+    container.style.display = 'block';
+  } else {
+    container.style.display = 'none';
+  }
+}
+</script>
+"""
+
+# Parsing nuovo formato con channels e channels2
+for day, categories in data.items():
+    html += f"<h2>{day}</h2>\n"
+    for category_name, events in categories.items():
+        html += f"<h3>{category_name}</h3>\n"
+        for event in events:
+            event_name = event.get("event", "Senza nome")
+            event_time = event.get("time", "")
+            
+            # Unisco channels e channels2
+            all_channels = []
+            if "channels" in event:
+                all_channels.extend(event["channels"])
+            if "channels2" in event:
+                all_channels.extend(event["channels2"])
+            
+            # Genero pulsanti
+            for idx, ch in enumerate(all_channels, start=1):
+                ch_name = ch.get("channel_name", "Senza nome")
+                ch_id = ch.get("channel_id", "")
+                stream_url = f"https://thedaddy.dad/embed/{ch_id}"
+                html += f'<div><button class="btn-original" onclick="playInIframe(\'{stream_url}\')">{event_time} - {event_name} ({ch_name}) [{idx}]</button></div>\n'
+
+# Player fisso in fondo
+html += """
+<div id="playerContainer">
+  <button onclick="toggleFullscreen()" style="position:absolute; top:5px; right:40px; z-index:10001;">🔳 Fullscreen</button>
+  <button onclick="togglePlayer()" style="position:absolute; top:5px; right:10px; z-index:10001;">X</button>
+  <iframe id="iframePlayer" src="" allowfullscreen></iframe>
+</div>
+</body>
+</html>
+"""
+
+# Salvataggio HTML
+with open("listaunica.html", "w", encoding="utf-8") as f:
+    f.write(html)
+
+print("File 'listaunica.html' creato con successo!")  border-radius: 5px;
   cursor: pointer;
 }
 
