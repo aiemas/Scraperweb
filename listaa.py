@@ -132,8 +132,14 @@ for day, categories in data_daddy.items():
             html += f'<h4 onclick="toggleChannels(\'{event_id}\')">{event_time} - {event_name}</h4>\n'
             html += f'<div class="channels" id="{event_id}">\n'
             for idx_ch, ch in enumerate(all_channels, start=1):
-                ch_name = ch.get("channel_name", "Senza nome")
-                ch_id = ch.get("channel_id", "")
+                if isinstance(ch, dict):  # Controlla se 'ch' è un dizionario
+                    ch_name = ch.get("channel_name", "Senza nome")
+                    ch_id = ch.get("channel_id", "")
+                elif isinstance(ch, str):  # Controlla se 'ch' è una stringa
+                    ch_name = ch  # Usa il valore della stringa come nome del canale
+                    ch_id = make_id(ch_name)  # Se è necessario un ID
+                else:
+                    continue  # Ignora i casi non desiderati
                 stream_url = f"https://thedaddy.click/embed/{ch_id}"
                 html += f'<button class="btn-original" onclick="playInIframe(\'{stream_url}\')">{ch_name} [{idx_ch}]</button>\n'
             html += '</div></div>\n'
