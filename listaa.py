@@ -141,7 +141,7 @@ for day, categories in data_daddy.items():
                 else:
                     continue  # Ignora i casi non desiderati
                 stream_url = f"https://thedaddy.dad/embed/stream-{ch_id}"
-                html += f'<button class="btn-original" onclick="playInIframe(\'{stream_url}\')">Play</button>'\')">{ch_name} [{idx_ch}]</button>\n'
+                html += f'<button class="btn-original" onclick="playInIframe(\'{stream_url}\')">{ch_name} [{idx_ch}]</button>\n'
             html += '</div></div>\n'
 
 # Player fisso
