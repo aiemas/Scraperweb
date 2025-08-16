@@ -1,81 +1,92 @@
 import requests
 import datetime
-import json
+import os
 
 URL = "https://thedaddy.dad/schedule/schedule-generated.php"
-OUTPUT_HTML = "index.html"
+OUTPUT_FILE = "listaa.html"
 
-def get_today_key():
-    today = datetime.datetime.utcnow() + datetime.timedelta(hours=2)  # UTC+2 per l'Italia (gestisce CET/CEST)
-    return today.strftime("%A %dth %b %Y - Schedule Time UK GMT")
+def fetch_data():
+    print(f"📥 Scarico JSON Daddy da: {URL}")
+    try:
+        resp = requests.get(URL, timeout=15)
+        resp.raise_for_status()
+    except requests.RequestException as e:
+        print(f"❌ Errore durante la richiesta: {e}")
+        return None
 
-def main():
-    print(f"Scarico JSON Daddy da: {URL}")
-    resp = requests.get(URL)
-    data = resp.json()
+    try:
+        return resp.json()
+    except ValueError:
+        print("❌ Errore: la risposta non è un JSON valido.")
+        print("📄 Contenuto ricevuto:", resp.text[:200], "...")
+        return None
 
-    today_key = get_today_key()
-    print(f"Oggi cerco la chiave: {today_key}")
-
-    if today_key not in data:
-        print("⚠ Nessuna chiave trovata per oggi!")
-        return
-
-    events = data[today_key]
-
-    # HTML base
+def generate_html(data):
     html = """
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Lista Eventi Daddy - Solo Giorno Odierno</title>
-        <style>
-            body { font-family: Arial, sans-serif; background: #121212; color: #eee; text-align: center; }
-            h1 { color: #ffcc00; }
-            input { width: 50%; padding: 8px; margin: 10px; border-radius: 8px; border: none; }
-            .event { margin: 8px; padding: 10px; background: #1e1e1e; border-radius: 10px; cursor: pointer; }
-            iframe { width: 90%; height: 500px; margin-top: 20px; border: none; }
-        </style>
-        <script>
-            function searchEvents() {
-                let input = document.getElementById('search').value.toLowerCase();
-                let events = document.getElementsByClassName('event');
-                for (let e of events) {
-                    e.style.display = e.textContent.toLowerCase().includes(input) ? '' : 'none';
-                }
-            }
-            function playStream(link) {
-                document.getElementById('player').src = link;
-                window.scrollTo({ top: document.getElementById('player').offsetTop, behavior: 'smooth' });
-            }
-        </script>
-    </head>
-    <body>
-        <h1>Lista Eventi Daddy - Solo Giorno Odierno</h1>
-        <input type="text" id="search" onkeyup="searchEvents()" placeholder="Cerca evento...">
-    """
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista Daddy</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212 url('https://i.imgur.com/1h9Y5iG.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #ffcc00;
+    }
+    .channel {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+    }
+    a {
+      color: #00ccff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>📺 Lista Daddy - Aggiornata {date}</h1>
+""".format(date=datetime.datetime.now().strftime("%d/%m/%Y %H:%M"))
 
-    for ev in events:
-        if isinstance(ev, dict):
-            ch_name = ev.get("channel_name", "Senza nome")
-            stream_id = ev.get("stream_id")
-            if stream_id:
-                embed_url = f"https://thedaddy.dad/embed/stream-{stream_id}.php"
-                html += f'<div class="event" onclick="playStream(\'{embed_url}\')">{ch_name}</div>'
+    if isinstance(data, list):
+        for ch in data:
+            if isinstance(ch, dict):
+                ch_name = ch.get("channel_name", "Senza nome")
+                ch_url = ch.get("url", "#")
+                html += f'<div class="channel"><a href="{ch_url}" target="_blank">{ch_name}</a></div>\n'
+    else:
+        html += "<p>⚠ Nessun dato valido trovato.</p>"
 
     html += """
-        <iframe id="player" allowfullscreen></iframe>
-    </body>
-    </html>
-    """
+</body>
+</html>
+"""
+    return html
 
-    with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
-        f.write(html)
+def main():
+    data = fetch_data()
+    if not data:
+        print("❌ Nessun dato da salvare, esco.")
+        return
+    
+    html_content = generate_html(data)
 
-    print(f"✅ File HTML generato: {OUTPUT_HTML}")
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+    print(f"✅ File HTML generato: {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     main()
-    # Salvataggio su file HTML
-with open("listaa.html", "w", encoding="utf-8") as f:
-    f.write(html)
