@@ -138,7 +138,7 @@ for day, categories in data_daddy.items():
                 if isinstance(ch, dict):
                     ch_name = ch.get("channel_name", "Senza nome")
                     ch_id = ch.get("channel_id", "")
-                    stream_url = f"https://thedaddy.click/embed/{ch_id}"
+                    stream_url = f"https://thedaddy.top/embed/stream-{ch_id}"
                 elif isinstance(ch, str):
                     ch_name = ch
                     ch_id = make_id(ch_name)
