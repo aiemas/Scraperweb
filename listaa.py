@@ -1,16 +1,22 @@
 import requests
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
+
+# ====== CONFIG ======
+TIME_OFFSET_HOURS = 2      # +2 ore per l'Italia rispetto all'orario mostrato dal sito
+ONLY_SOCCER = True         # True = mostra solo categoria "Soccer", False = tutte
+OUTPUT_FILE = "listaa.html"
+# =====================
 
 # Funzione per creare ID validi da stringhe
 def make_id(s):
     return re.sub(r'\W+', '_', s)
 
-# Funzione per filtrare solo il giorno odierno
+# Funzione per filtrare solo il giorno odierno (in base all’intestazione tipo "Friday 15th Aug 2025 - ...")
 def is_today(day_string):
     try:
-        date_part = day_string.split("-")[0].strip()
+        date_part = day_string.split("-")[0].strip()  # es: "Friday 15th Aug 2025"
         for suf in ["th","st","nd","rd",","]:
             date_part = date_part.replace(suf,"")
         parts = date_part.strip().split()
@@ -21,6 +27,17 @@ def is_today(day_string):
         return day_dt.date() == datetime.today().date()
     except:
         return False
+
+# Somma ore a una stringa HH:MM; ritorna "HH:MM" e aggiunge "(+1)" se passa a giorno successivo
+def adjust_time(time_str, offset_hours=2):
+    try:
+        t = datetime.strptime(time_str.strip(), "%H:%M")
+        t2 = t + timedelta(hours=offset_hours)
+        rolled = (t2.day != t.day)  # se supera mezzanotte
+        out = t2.strftime("%H:%M")
+        return out + (" (+1)" if rolled else "")
+    except:
+        return time_str  # se non parsabile, mostra quello originale
 
 # URL lista eventi Daddy
 url_daddy = "https://thedaddy.dad/schedule/schedule-generated.php"
@@ -44,32 +61,40 @@ except json.JSONDecodeError as e:
     print("📄 Contenuto ricevuto:", response.text[:200], "...")
     exit(1)
 
-# HTML iniziale
+# HTML iniziale (con stile un po' più carino)
 html = """<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Lista Eventi Daddy</title>
 <style>
-body { font-family: Arial, sans-serif; margin: 20px; padding-bottom: 60vh; background: #121212; color: #fff; }
-input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; border-radius: 8px; border: none; }
+  :root { color-scheme: dark; }
+  body { font-family: system-ui, Arial, sans-serif; margin: 20px; padding-bottom: 60vh; background: #0f1115; color: #f1f5f9; }
+  input[type="text"] { width: 100%; padding: 10px 14px; margin-bottom: 20px; font-size: 16px; border-radius: 10px; border: 1px solid #2a2f3a; background:#131722; color:#e5e7eb; outline: none; }
+  input[type="text"]::placeholder { color:#94a3b8; }
 
-h1, h2, h3, h4 { margin-bottom: 10px; }
-h4 { cursor: pointer; margin: 5px 0; padding: 6px; background: #1e1e1e; border-radius: 8px; }
+  h1 { margin-bottom: 12px; font-weight: 700; }
+  h2 { margin-top: 24px; color: #93c5fd; }
+  h3 { margin: 12px 0 8px; color: #a5b4fc; }
+  h4 { cursor: pointer; margin: 6px 0; padding: 10px 12px; background: #151a28; border: 1px solid #202638; border-radius: 12px; }
 
-div.event { margin-bottom: 12px; padding: 10px; background: #1f1f1f; border-radius: 10px; box-shadow: 0px 2px 6px rgba(0,0,0,0.4); }
-div.channels { margin-left: 20px; display: none; }
+  .event { margin-bottom: 12px; padding: 10px; background: #111623; border: 1px solid #1f2435; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,.35); }
+  .channels { margin-left: 8px; margin-top: 8px; display: none; }
 
-button { margin: 5px; padding: 10px 14px; font-size: 14px; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-.btn-original { background-color: #4CAF50; color: white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
-.btn-original:hover { background-color: #66bb6a; transform: scale(1.05); }
+  button { margin: 6px 6px 0 0; padding: 10px 14px; font-size: 14px; border: none; border-radius: 10px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }
+  .btn-play { background: linear-gradient(180deg, #22c55e, #16a34a); color: white; box-shadow: 0 2px 10px rgba(34,197,94,.25); }
+  .btn-play:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(34,197,94,.35); }
 
-#playerContainer { position: fixed; bottom: 0; left: 0; width: 100%; height: 35vh; background-color: black; z-index: 9999; }
-#iframePlayer { width: 100%; height: 100%; border: none; }
+  #playerContainer { position: fixed; bottom: 0; left: 0; width: 100%; height: 35vh; background-color: black; z-index: 9999; border-top: 1px solid #222; }
+  #iframePlayer { width: 100%; height: 100%; border: none; }
+  .player-actions { position:absolute; top:6px; right:10px; z-index:10001; display:flex; gap:8px; }
+  .ctrl { padding: 6px 10px; font-size: 13px; border-radius: 8px; border: 1px solid #2a2f3a; background:#111827; color:#e5e7eb; cursor:pointer; }
+  .time-note { font-size:12px; color:#94a3b8; margin: 0 0 10px 2px; }
 </style>
 </head>
 <body>
-<h1>Lista Eventi Daddy - Solo Soccer (Oggi)</h1>
+<h1>Lista Eventi Daddy (orari mostrati = UK +{offset}h)</h1>
+<p class="time-note">Esempio: se sul sito è 19:15, qui vedrai 21:15.</p>
 <input type="text" id="searchInput" placeholder="Cerca evento o canale...">
 
 <script>
@@ -105,61 +130,80 @@ function togglePlayer() {
 
 function toggleChannels(id) {
     const elem = document.getElementById(id);
-    if (elem.style.display === 'none') { elem.style.display = 'block';
+    if (elem.style.display === 'none' || !elem.style.display) { elem.style.display = 'block';
     } else { elem.style.display = 'none'; }
 }
 </script>
-"""
+""".replace("{offset}", str(TIME_OFFSET_HOURS))
 
-# Generazione eventi solo Soccer di oggi
+# Generazione eventi (solo oggi; opzionale filtro Soccer)
 for day, categories in data_daddy.items():
     if not is_today(day):
         continue
     html += f"<h2>{day}</h2>\n"
     for category_name, events in categories.items():
-        if category_name.lower() != "soccer":  # 👉 mostriamo solo soccer
+        if ONLY_SOCCER and category_name.lower() != "soccer":
             continue
         html += f"<h3>{category_name}</h3>\n"
         for idx_event, event in enumerate(events, start=1):
             event_name = event.get("event", "Senza nome")
-            event_time = event.get("time", "")
+            event_time = event.get("time", "").strip()
+            if not event_time:
+                continue
+
+            # Somma +2 ore all’orario di partenza
+            adj_time = adjust_time(event_time, TIME_OFFSET_HOURS)
+
+            # Unisci channels/channels2
             all_channels = []
-            if "channels" in event:
+            if "channels" in event and isinstance(event["channels"], list):
                 all_channels.extend(event["channels"])
-            if "channels2" in event:
+            if "channels2" in event and isinstance(event["channels2"], list):
                 all_channels.extend(event["channels2"])
             if not all_channels:
                 continue
-            event_id = make_id(f"{day}_{idx_event}")
+
+            event_id = make_id(f"{day}_{category_name}_{idx_event}")
             html += f'<div class="event">'
-            html += f'<h4 onclick="toggleChannels(\'{event_id}\')">⚽ {event_time} - {event_name}</h4>\n'
+            html += f'<h4 onclick="toggleChannels(\'{event_id}\')">🕒 {adj_time} — {event_name}</h4>\n'
             html += f'<div class="channels" id="{event_id}">\n'
+
+            # Bottoni canali (tutti in formato dad/embed/stream-XXX.php come richiesto)
             for idx_ch, ch in enumerate(all_channels, start=1):
+                ch_name, ch_id = "Senza nome", ""
                 if isinstance(ch, dict):
                     ch_name = ch.get("channel_name", "Senza nome")
-                    ch_id = ch.get("channel_id", "")
-                    stream_url = f"https://thedaddy.top/embed/stream-{ch_id}.php"
+                    ch_id = str(ch.get("channel_id", "")).strip()
                 elif isinstance(ch, str):
                     ch_name = ch
-                    ch_id = make_id(ch_name)
-                    stream_url = f"https://thedaddy.top/embed/stream-{ch_id}.php"
+                    m = re.search(r'\d+', ch)  # estrai un numero se presente
+                    ch_id = m.group(0) if m else ""
                 else:
                     continue
-                html += f'<button class="btn-original" onclick="playInIframe(\'{stream_url}\')">📺 {ch_name}</button>\n'
+
+                if not ch_id:
+                    continue  # se non ho un ID numerico non posso creare l'embed
+
+                stream_url = f"https://thedaddy.dad/embed/stream-{ch_id}.php"
+                safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
+                html += f'<button class="btn-play" onclick="playInIframe(\'{stream_url}\')">📺 {safe_text}</button>\n'
+
             html += '</div></div>\n'
 
 # Player fisso
 html += """
 <div id="playerContainer">
-  <button onclick="toggleFullscreen()" style="position:absolute; top:5px; right:40px; z-index:10001;">🔳 Fullscreen</button>
-  <button onclick="togglePlayer()" style="position:absolute; top:5px; right:10px; z-index:10001;">X</button>
+  <div class="player-actions">
+    <button class="ctrl" onclick="toggleFullscreen()">🔳 Fullscreen</button>
+    <button class="ctrl" onclick="togglePlayer()">Chiudi</button>
+  </div>
   <iframe id="iframePlayer" src="" allowfullscreen></iframe>
 </div>
 </body>
 </html>
 """
 
-with open("listaa.html", "w", encoding="utf-8") as f:
+with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
     f.write(html)
 
-print("✅ File 'listaa.html' creato con successo!")
+print(f"✅ File '{OUTPUT_FILE}' creato con successo!")
