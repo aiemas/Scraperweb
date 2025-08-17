@@ -51,24 +51,25 @@ html = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <title>Lista Eventi Daddy</title>
 <style>
-body { font-family: sans-serif; margin: 20px; padding-bottom: 60vh; background: #121212; color: #fff; }
-input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
+body { font-family: Arial, sans-serif; margin: 20px; padding-bottom: 60vh; background: #121212; color: #fff; }
+input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; border-radius: 8px; border: none; }
 
 h1, h2, h3, h4 { margin-bottom: 10px; }
-h4 { cursor: pointer; }
+h4 { cursor: pointer; margin: 5px 0; padding: 6px; background: #1e1e1e; border-radius: 8px; }
 
-div.event { margin-bottom: 10px; }
+div.event { margin-bottom: 12px; padding: 10px; background: #1f1f1f; border-radius: 10px; box-shadow: 0px 2px 6px rgba(0,0,0,0.4); }
 div.channels { margin-left: 20px; display: none; }
 
-button { margin: 3px; padding: 6px 10px; font-size: 14px; border: none; border-radius: 5px; cursor: pointer; }
-.btn-original { background-color: #4CAF50; color: white; }
+button { margin: 5px; padding: 10px 14px; font-size: 14px; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+.btn-original { background-color: #4CAF50; color: white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+.btn-original:hover { background-color: #66bb6a; transform: scale(1.05); }
 
 #playerContainer { position: fixed; bottom: 0; left: 0; width: 100%; height: 35vh; background-color: black; z-index: 9999; }
 #iframePlayer { width: 100%; height: 100%; border: none; }
 </style>
 </head>
 <body>
-<h1>Lista Eventi Daddy - Solo Giorno Odierno</h1>
+<h1>Lista Eventi Daddy - Solo Soccer (Oggi)</h1>
 <input type="text" id="searchInput" placeholder="Cerca evento o canale...">
 
 <script>
@@ -110,12 +111,14 @@ function toggleChannels(id) {
 </script>
 """
 
-# Generazione eventi solo odierni
+# Generazione eventi solo Soccer di oggi
 for day, categories in data_daddy.items():
     if not is_today(day):
         continue
     html += f"<h2>{day}</h2>\n"
     for category_name, events in categories.items():
+        if category_name.lower() != "soccer":  # 👉 mostriamo solo soccer
+            continue
         html += f"<h3>{category_name}</h3>\n"
         for idx_event, event in enumerate(events, start=1):
             event_name = event.get("event", "Senza nome")
@@ -129,20 +132,20 @@ for day, categories in data_daddy.items():
                 continue
             event_id = make_id(f"{day}_{idx_event}")
             html += f'<div class="event">'
-            html += f'<h4 onclick="toggleChannels(\'{event_id}\')">{event_time} - {event_name}</h4>\n'
+            html += f'<h4 onclick="toggleChannels(\'{event_id}\')">⚽ {event_time} - {event_name}</h4>\n'
             html += f'<div class="channels" id="{event_id}">\n'
             for idx_ch, ch in enumerate(all_channels, start=1):
-                if isinstance(ch, dict):  # Controlla se 'ch' è un dizionario
+                if isinstance(ch, dict):
                     ch_name = ch.get("channel_name", "Senza nome")
                     ch_id = ch.get("channel_id", "")
-                elif isinstance(ch, str):  # Controlla se 'ch' è una stringa
-                    ch_name = ch  # Usa il valore della stringa come nome del canale
-                    ch_id = make_id(ch_name)  # Se è necessario un ID
+                    stream_url = f"https://thedaddy.click/embed/{ch_id}"
+                elif isinstance(ch, str):
+                    ch_name = ch
+                    ch_id = make_id(ch_name)
+                    stream_url = f"https://thedaddy.dad/embed/stream-{ch_id}.php"
                 else:
-                    continue  # Ignora i casi non desiderati
-                # per ogni canale
-                stream_url = f"https://thedaddy.dad/embed/stream-{ch_id}.php"
-                html += f'<button class="btn-original" onclick="playInIframe(\'{stream_url}\')">{ch_name} [{idx_ch}]</button>\n'
+                    continue
+                html += f'<button class="btn-original" onclick="playInIframe(\'{stream_url}\')">📺 {ch_name}</button>\n'
             html += '</div></div>\n'
 
 # Player fisso
