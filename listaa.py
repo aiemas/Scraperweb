@@ -142,7 +142,7 @@ for day, categories in data_daddy.items():
                 elif isinstance(ch, str):
                     ch_name = ch
                     ch_id = make_id(ch_name)
-                    stream_url = f"https://thedaddy.dad/embed/stream-{ch_id}.php"
+                    stream_url = f"https://thedaddy.top/embed/stream-{ch_id}.php"
                 else:
                     continue
                 html += f'<button class="btn-original" onclick="playInIframe(\'{stream_url}\')">📺 {ch_name}</button>\n'
