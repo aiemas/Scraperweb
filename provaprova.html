@@ -16,12 +16,13 @@
     function playWithHls(url) {
         if (Hls.isSupported()) {
             var video = document.getElementById('hlsPlayer');
-            var hls = new Hls({
-                xhrSetup: function(xhr, url) {
-                    xhr.setRequestHeader('Referer', 'https://daddylive.eu/');
-                    xhr.setRequestHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)');
-                }
-            });
+var hls = new Hls({
+    xhrSetup: function(xhr, url) {
+        xhr.setRequestHeader('Referer', 'https://jxoplay.xyz/');
+        xhr.setRequestHeader('User-Agent', 'Mozilla/5.0 (SMART-TV; Linux; Tizen 6.0) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/2.1 TV Safari/537.36');
+    }
+});
+
             hls.loadSource(url);
             hls.attachMedia(video);
             hls.on(Hls.Events.MANIFEST_PARSED, function () {
