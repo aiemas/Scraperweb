@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Hls.js IPTV</title>
+</head>
+<body>
+  <!-- Contenitore player -->
+  <div id="hlsPlayerContainer" style="margin-top:20px;">
+    <video id="hlsPlayer" controls autoplay width="100%" height="360"></video>
+  </div>
+
+  <!-- Libreria Hls.js -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>
+    function playWithHls(url) {
+        if (Hls.isSupported()) {
+            var video = document.getElementById('hlsPlayer');
+            var hls = new Hls({
+                xhrSetup: function(xhr, url) {
+                    xhr.setRequestHeader('Referer', 'https://daddylive.eu/');
+                    xhr.setRequestHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)');
+                }
+            });
+            hls.loadSource(url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                video.play();
+            });
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // fallback per Safari/iOS
+            var video = document.getElementById('hlsPlayer');
+            video.src = url;
+            video.addEventListener('loadedmetadata', function() {
+                video.play();
+            });
+        }
+    }
+  </script>
+
+  <!-- Pulsanti di esempio per 4 canali -->
+  <button onclick="playWithHls('https://nfsnew.newkso.ru/nfs/premium400/mono.m3u8')">
+    📺 SD-8446154 [1]
+  </button>
+
+  <button onclick="playWithHls('https://windnew.newkso.ru/wind/premium401/mono.m3u8')">
+    📺 SD-8446155 [2]
+  </button>
+
+  <button onclick="playWithHls('https://zekonew.newkso.ru/zeko/premium402/mono.m3u8')">
+    📺 SD-8446156 [3]
+  </button>
+
+  <button onclick="playWithHls('https://dokko1new.newkso.ru/dokko/premium403/mono.m3u8')">
+    📺 SD-8446157 [4]
+  </button>
+</body>
+</html>
