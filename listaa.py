@@ -12,40 +12,6 @@ OUTPUT_FILE = "listaa.html"
 def make_id(s):
     return re.sub(r'\W+', '_', s)
 
-def is_today(day_string):
-    try:
-        # Togli la parte dopo il trattino (Schedule Time UK GMT)
-        date_part = day_string.split("-")[0].strip()
-        
-        # Rimuovi suffissi tipo "25th"
-        for suf in ["th","st","nd","rd",","]:
-            date_part = date_part.replace(suf,"")
-        
-        # Spezza in parole
-        parts = date_part.strip().split()
-        if len(parts) < 3:
-            return False
-        
-        # Se la prima parola è il giorno della settimana (Monday, Tuesday ecc.), toglila
-        if parts[0].lower() in [
-            "monday","tuesday","wednesday","thursday","friday","saturday","sunday"
-        ]:
-            parts = parts[1:]
-        
-        # Ora dovrebbe restare ["25","August","2025"]
-        day_month_year = " ".join(parts[-3:])
-        
-        # Prova con mese corto, poi lungo
-        try:
-            day_dt = datetime.strptime(day_month_year, "%d %b %Y")
-        except ValueError:
-            day_dt = datetime.strptime(day_month_year, "%d %B %Y")
-        
-        return day_dt.date() == datetime.today().date()
-    except Exception as e:
-        print("DEBUG is_today ERROR:", e, "input era:", day_string)
-        return False
-
 def adjust_time(time_str, offset_hours=2):
     try:
         t = datetime.strptime(time_str.strip(), "%H:%M")
@@ -167,10 +133,8 @@ function toggleChannels(id) {{
 </script>
 """
 
-# Generazione eventi
+# Generazione eventi (senza filtro sulla data)
 for day, categories in data_daddy.items():
-    if not is_today(day):
-        continue
     html += f"<h2>{day}</h2>\n"
     for category_name, events in categories.items():
         if ONLY_SOCCER and category_name.lower() != "soccer":
