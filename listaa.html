@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lista Eventi Daddy</title>
+<style>
+  :root { color-scheme: dark; }
+  body { font-family: system-ui, Arial, sans-serif; margin: 20px; padding-bottom: 60vh; background: #0f1115; color: #f1f5f9; }
+  input[type="text"] { width: 100%; padding: 10px 14px; margin-bottom: 20px; font-size: 16px; border-radius: 10px; border: 1px solid #2a2f3a; background:#131722; color:#e5e7eb; outline: none; }
+  input[type="text"]::placeholder { color:#94a3b8; }
+
+  h1 { margin-bottom: 12px; font-weight: 700; }
+  h2 { margin-top: 24px; color: #93c5fd; }
+  h3 { margin: 12px 0 8px; color: #a5b4fc; }
+  h4 { cursor: pointer; margin: 6px 0; padding: 10px 12px; background: #151a28; border: 1px solid #202638; border-radius: 12px; }
+
+  .event { margin-bottom: 12px; padding: 10px; background: #111623; border: 1px solid #1f2435; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,.35); }
+  .channels { margin-left: 8px; margin-top: 8px; display: none; }
+
+  button { margin: 6px 6px 0 0; padding: 10px 14px; font-size: 14px; border: none; border-radius: 10px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }
+  .btn-play { background: linear-gradient(180deg, #22c55e, #16a34a); color: white; box-shadow: 0 2px 10px rgba(34,197,94,.25); }
+  .btn-play:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(34,197,94,.35); }
+
+  /* Player in sovraimpressione */
+  #playerContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 60%;
+    background-color: black;
+    z-index: 9999;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.7);
+    display: none;
+  }
+  #iframePlayer { width: 100%; height: 100%; border: none; }
+  .player-actions { position:absolute; top:6px; right:10px; z-index:10001; display:flex; gap:8px; }
+  .ctrl { padding: 6px 10px; font-size: 13px; border-radius: 8px; border: 1px solid #2a2f3a; background:#111827; color:#e5e7eb; cursor:pointer; }
+  .time-note { font-size:12px; color:#94a3b8; margin: 0 0 10px 2px; }
+</style>
+</head>
+<body>
+<h1>Lista Eventi Daddy (orari mostrati = UK +2h)</h1>
+<p class="time-note">Esempio: se sul sito è 19:15, qui vedrai 21:15.</p>
+<input type="text" id="searchInput" placeholder="Cerca evento o canale...">
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function() {
+        const filter = searchInput.value.toLowerCase();
+        const events = document.querySelectorAll('div.event');
+        events.forEach(eventDiv => {
+            const text = eventDiv.textContent.toLowerCase();
+            eventDiv.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+});
+
+function playInIframe(url) {
+    const container = document.getElementById('playerContainer');
+    const iframe = document.getElementById('iframePlayer');
+    iframe.src = url;
+    container.style.display = 'block';
+}
+
+function toggleFullscreen() {
+    const iframe = document.getElementById('iframePlayer');
+    if (iframe.requestFullscreen) { iframe.requestFullscreen(); }
+    else if (iframe.webkitRequestFullscreen) { iframe.webkitRequestFullscreen(); }
+    else if (iframe.mozRequestFullScreen) { iframe.mozRequestFullScreen(); }
+    else if (iframe.msRequestFullscreen) { iframe.msRequestFullscreen(); }
+}
+
+function togglePlayer() {
+    const container = document.getElementById('playerContainer');
+    if (container.style.display === 'none') { container.style.display = 'block'; }
+    else { container.style.display = 'none'; document.getElementById('iframePlayer').src = ""; }
+}
+
+function toggleChannels(id) {
+    const elem = document.getElementById(id);
+    if (elem.style.display === 'none' || !elem.style.display) { elem.style.display = 'block'; }
+    else { elem.style.display = 'none'; }
+}
+</script>
+<h2>Monday 25th August 2025 - Schedule Time UK GMT</h2>
+<h3>Soccer</h3>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_1')">🕒 13:30 — Singapore - Premier League : Lion City Sailors vs Hougang United</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_1">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8326715.php')">📺 SD-8326715 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_2')">🕒 14:00 — China - Super League : Beijing Guoan vs Wuhan Three Towns</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_2">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-530.php')">📺 GOL PLAY ES [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8049166.php')">📺 SD-8049166 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_3')">🕒 15:00 — Premier League 2 : Liverpool U21 vs Burnley U21</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_3">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-826.php')">📺 LFCTV [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_4')">🕒 16:00 — Russia - FNL : Ural vs Volga Ulyanovsk</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_4">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-573.php')">📺 Match Premier Russia [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_5')">🕒 16:30 — Latvia - Virsliga : Liepāja vs Super Nova</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_5">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-1.php')">📺 TV4 Latvia [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_6')">🕒 17:00 — Estonia - Esiliiga A : Flora Tallinn U21 vs Tartu Tammeka U21</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_6">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8418781.php')">📺 SD-8418781 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_7')">🕒 17:00 — Finland - Veikkausliiga : Haka Valkeakoski vs SJK Seinajoki</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_7">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8031300.php')">📺 SD-8031300 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_8')">🕒 17:00 — Azerbaijan - Premier Liqa : Qabala vs Zira</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_8">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-2.php')">📺 CBC Sport Azerbaijan [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_9')">🕒 17:00 — Serbia - Prva Liga : Zemun vs Graficar Beograd</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_9">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-3.php')">📺 Arena 5 Premium Serbia [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_10')">🕒 17:30 — Poland - I League : Wieczysta Krakow vs Gornik Leczna</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_10">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8358716.php')">📺 SD-8358716 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_11')">🕒 18:00 — Finland - Veikkausliiga : IF Gnistan vs AC Oulu</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_11">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8449738.php')">📺 SD-8449738 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_12')">🕒 18:00 — Bulgaria - Parva Liga : Slavia Sofia vs Arda</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_12">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-465.php')">📺 Diema Sport Bulgaria [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-104.php')">📺 Sport Klub 4 Croatia [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8459017.php')">📺 SD-8459017 [3]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_13')">🕒 18:00 — Romania - Liga I : Hermannstadt vs Farul Constanța</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_13">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-400.php')">📺 Digi Sport 1 Romania [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-583.php')">📺 Prima Sport 1 Romania [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-433.php')">📺 Arena Sport 2 Croatia [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8181125.php')">📺 SD-8181125 [4]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_14')">🕒 18:00 — Turkey - Super Lig : Eyüpspor vs Alanyaspor</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_14">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-62.php')">📺 beIN Sports 1 Turkey [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_15')">🕒 18:00 — Lithuanian League : Siauliai vs Suduva</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_15">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-102.php')">📺 Sport Klub 2 Croatia [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8473388.php')">📺 SD-8473388 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_16')">🕒 18:00 — Estonia - Esiliiga A : Levadia Tallinn U21 vs Viimsi</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_16">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8418799.php')">📺 SD-8418799 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_17')">🕒 18:30 — Russia - FNL : Rotor Volgograd vs Torpedo Moskva</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_17">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-573.php')">📺 Match Premier Russia [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-127.php')">📺 MATCH TV Russia [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_18')">🕒 18:30 — Italy - Serie A : Udinese vs Hellas Verona</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_18">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-877.php')">📺 DAZN Zona IT [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-427.php')">📺 DAZN2 DE [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-74.php')">📺 Sport TV2 Portugal [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-71.php')">📺 Eleven Sports 1 Poland [4]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-124.php')">📺 Astro Football [5]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-643.php')">📺 FOX Deportes USA [6]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-402.php')">📺 Digi Sport 3 Romania [7]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-585.php')">📺 Prima Sport 3 Romania [8]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-135.php')">📺 Arena 2 Premium Serbia [9]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-136.php')">📺 MATCH! Futbol 1 Russia [10]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-914.php')">📺 Cytavision Sports 4 Cyprus [11]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-624.php')">📺 Cosmote Sport 3 Greece [12]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-580.php')">📺 Arena Sport 4 Croatia [13]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-474.php')">📺 MAX Sport 3 Bulgaria [14]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-747.php')">📺 TV4 Fotball [15]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-83.php')">📺 ESPN3 Brazil [16]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-56.php')">📺 SuperSport Football [17]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-143.php')">📺 Sport 4 Israel [18]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_19')">🕒 18:30 — Greece - Super League : Levadiakos vs Kifisia</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_19">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-632.php')">📺 Nova Sports 2 Greece [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-453.php')">📺 Sport Klub HD Croatia [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_20')">🕒 18:30 — Israel - Liga Leumit : Kafr Qasim vs Hapoel Hadera</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_20">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-147.php')">📺 5 STARS Israel [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_21')">🕒 18:30 — Israel - Liga Leumit : Hapoel Kfar Shalem vs Maccabi Petah Tikva</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_21">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-144.php')">📺 5 SPORT Israel [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_22')">🕒 18:30 — Israel - Liga Leumit : Maccabi Herzliya vs Hapoel Ramat HaSharon</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_22">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-146.php')">📺 5 LIVE Israel [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_23')">🕒 19:00 — Norway - Eliteserien : Sarpsborg 08 vs Kristiansund</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_23">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-4.php')">📺 TV2 Sport Norway [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8025763.php')">📺 SD-8025763 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_24')">🕒 19:00 — Sweden Allsvenskan : GAIS vs Mjällby AIF</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_24">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-5.php')">📺 Max Extra 1 Sweden [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8031301.php')">📺 SD-8031301 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_25')">🕒 19:00 — Sweden Allsvenskan : Oster vs IFK Norrköping</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_25">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-6.php')">📺 Max Extra 2 Sweden [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8031302.php')">📺 SD-8031302 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_26')">🕒 19:00 — Sweden Superettan : Falkenberg vs Sandviken</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_26">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-7.php')">📺 Max Extra 3 Sweden [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8418815.php')">📺 SD-8418815 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_27')">🕒 19:00 — Sweden Superettan : GIF Sundsvall vs Oddevold</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_27">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-8.php')">📺 Max Extra 4 Sweden [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8418816.php')">📺 SD-8418816 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_28')">🕒 19:00 — Sweden Superettan : Trelleborg vs Landskrona</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_28">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-9.php')">📺 Max Extra 5 Sweden [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8418817.php')">📺 SD-8418817 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_29')">🕒 19:00 — Sweden Superettan : Orebro vs Umeå</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_29">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-10.php')">📺 Max Extra 6 Sweden [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8418819.php')">📺 SD-8418819 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_30')">🕒 19:00 — Poland - I Liga : Tychy 71 vs Stal Mielec</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_30">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-128.php')">📺 TVP Sport Poland [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8358718.php')">📺 SD-8358718 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_31')">🕒 19:00 — Portugal - Segunda liga : Lusitania FC Lourosa vs Benfica II</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_31">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-11.php')">📺 Sport TV+ Portugal [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-291.php')">📺 Sport TV6 Portugal [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8407871.php')">📺 SD-8407871 [3]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_32')">🕒 19:00 — Israeli Ligat ha'Al : Bnei Sakhnin vs Beitar Jerusalem</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_32">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-140.php')">📺 Sport 1 Israel [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_33')">🕒 19:00 — Poland - Ekstraklasa : Wisła Płock vs Zagłębie Lubin</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_33">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-259.php')">📺 Canal+ Sport 3 Poland [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-75.php')">📺 Canal+ Sport 5 Poland [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-425.php')">📺 beIN SPORTS USA [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-372.php')">📺 beIN SPORTS en Español [4]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-12.php')">📺 Arena 4 Premium Serbia [5]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8083439.php')">📺 SD-8083439 [6]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_34')">🕒 19:00 — Denmark - Super Liga : Nordsjælland vs Viborg</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_34">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-808.php')">📺 TV2 Sport X Denmark [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-3.php')">📺 Arena 5 Premium Serbia [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-101.php')">📺 Sport Klub 1 Croatia [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8352829.php')">📺 SD-8352829 [4]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_35')">🕒 19:30 — Spain - La Liga : Athletic Club vs Rayo Vallecano</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_35">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-84.php')">📺 M+ LALIGA TV [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-276.php')">📺 LaLigaTV UK [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-451.php')">📺 Viaplay Sports 1 UK [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-771.php')">📺 Premier Sports 1 Ireland [4]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-426.php')">📺 DAZN1 DE [5]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-428.php')">📺 Eleven Sports 3 Poland [6]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-117.php')">📺 beIN Sports 2 France [7]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-398.php')">📺 Ziggo Sport 2 NL [8]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-375.php')">📺 ESPN Deportes [9]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-401.php')">📺 Digi Sport 2 Romania [10]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-584.php')">📺 Prima Sport 2 Romania [11]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-712.php')">📺 beIN Sports 1 Malaysia [12]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-137.php')">📺 MATCH! Futbol 2 Russia [13]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-139.php')">📺 Arena 3 Premium Serbia [14]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-631.php')">📺 Nova Sports 1 Greece [15]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-703.php')">📺 TV4 Sport Live 1 [16]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-473.php')">📺 MAX Sport 2 Bulgaria [17]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-415.php')">📺 SuperSport Laliga [18]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-85.php')">📺 ESPN4 Brasil [19]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-572.php')">📺 SuperSport MaXimo 1 [20]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-93.php')">📺 beIN Sports MENA 3 [21]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8210726.php')">📺 SD-8210726 [22]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_36')">🕒 19:30 — Spain - Segunda Division : Albacete vs Racing Santander</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_36">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-539.php')">📺 LALIGA TV Hypermotion [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-1023.php')">📺 Nova Sport 3 CZ [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-714.php')">📺 beIN Sports 3 Malaysia [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-637.php')">📺 Nova Sports Start Greece [4]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-494.php')">📺 beIN Sports 4 MAX France [5]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-430.php')">📺 Arena Sport 2 Serbia [6]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-707.php')">📺 TV4 Sportkanalen [7]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-472.php')">📺 MAX Sport 1 Bulgaria [8]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8210638.php')">📺 SD-8210638 [9]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_37')">🕒 20:00 — Netherland - Eerste Divisie : AZ Youths vs Cambuur-Leeuwarden</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_37">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-379.php')">📺 ESPN 1 NL [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_38')">🕒 20:00 — Netherland - Eerste Divisie : Utrecht Youths vs Ajax Youths</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_38">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-386.php')">📺 ESPN 2 NL [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_39')">🕒 20:00 — Argentina - Primera División : Deportivo Riestra vs Sarmiento</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_39">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-388.php')">📺 TNT Sports Argentina [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8413785.php')">📺 SD-8413785 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_40')">🕒 20:00 — Hungarian NB 2 : Vasas vs Tiszakécske</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_40">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-265.php')">📺 M4 Sport Hungary [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_41')">🕒 20:15 — Switzerland - Challenge League : Neuchâtel Xamax vs Vaduz</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_41">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-1.php')">📺 Blue Sport D 1 [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8418840.php')">📺 SD-8418840 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_42')">🕒 20:15 — Switzerland - Challenge League : Aarau vs Stade Lausanne-Ouchy</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_42">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-2.php')">📺 Blue Sport 1 Live [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8278308.php')">📺 SD-8278308 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_43')">🕒 20:15 — Bulgaria - Parva Liga : Beroe vs Ludogorets</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_43">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-465.php')">📺 Diema Sport Bulgaria [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_44')">🕒 20:30 — Turkey - 1. Lig : İstanbulspor vs Manisa BBSK</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_44">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-889.php')">📺 TRT Spor Turkey [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-63.php')">📺 beIN Sports 2 Turkey [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_45')">🕒 20:30 — Italy - Serie B : Sampdoria vs Modena</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_45">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-23.php')">📺 DAZN Italia [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8364686.php')">📺 SD-8364686 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_46')">🕒 20:45 — Italy - Serie A : Internazionale vs Torino</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_46">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-871.php')">📺 Sky Sport 251 IT [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-870.php')">📺 Sky Sport Calcio IT [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-308.php')">📺 CBS Sports Network USA [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-427.php')">📺 DAZN2 DE [4]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-74.php')">📺 Sport TV2 Portugal [5]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-47.php')">📺 Polsat Sport 1 Poland [6]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-71.php')">📺 Eleven Sports 1 Poland [7]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-124.php')">📺 Astro Football [8]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-400.php')">📺 Digi Sport 1 Romania [9]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-583.php')">📺 Prima Sport 1 Romania [10]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-914.php')">📺 Cytavision Sports 4 Cyprus [11]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-919.php')">📺 Ziggo Sport 3 NL [12]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-136.php')">📺 MATCH! Futbol 1 Russia [13]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-127.php')">📺 MATCH TV Russia [14]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-135.php')">📺 Arena 2 Premium Serbia [15]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-643.php')">📺 FOX Deportes USA [16]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-623.php')">📺 Cosmote Sport 2 Greece [17]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-580.php')">📺 Arena Sport 4 Croatia [18]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-747.php')">📺 TV4 Fotball [19]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-474.php')">📺 MAX Sport 3 Bulgaria [20]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-798.php')">📺 ESPN3 Argentina [21]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-56.php')">📺 SuperSport Football [22]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-143.php')">📺 Sport 4 Israel [23]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_47')">🕒 20:45 — France - Ligue 2 : Pau vs Reims</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_47">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-116.php')">📺 beIN Sports 1 France [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-94.php')">📺 beIN Sports MENA 4 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_48')">🕒 21:00 — England - Premier League : Newcastle United vs Liverpool</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_48">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-13.php')">📺 Hub Premier 1 [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-343.php')">📺 USA Network [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-845.php')">📺 NBC UNIVERSO USA [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-38.php')">📺 Sky Sports Main Event UK [4]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-130.php')">📺 Sky Sports Premier League UK [5]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-595.php')">📺 Sky Sport 8 NZ [6]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-445.php')">📺 DAZN 1 Spain [7]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-1020.php')">📺 Canal+ Sport CZ [8]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-64.php')">📺 beIN Sports 3 Turkey [9]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-14.php')">📺 Sky Sport Premier League DE [10]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-556.php')">📺 Sky Sport Top Event DE [11]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-455.php')">📺 DAZN Eleven 1 Portugal [12]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-463.php')">📺 Canal+ Foot France [13]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-15.php')">📺 Canal+ Extra 1 Poland [14]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-874.php')">📺 Sky Sport 254 IT [15]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-488.php')">📺 Canal+ Sport 3 Afrique [16]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-913.php')">📺 Cytavision Sports 3 Cyprus [17]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-125.php')">📺 Astro Premier League [18]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-123.php')">📺 Astro Grandstand [19]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-134.php')">📺 Arena 1 Premium Serbia [20]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-638.php')">📺 Nova Sports Prime Greece [21]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-599.php')">📺 Nova Sports Premier League Greece [22]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-819.php')">📺 TV3+ HD Denmark [23]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-434.php')">📺 Arena Sport 3 Croatia [24]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-16.php')">📺 V Sport Premium [25]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-466.php')">📺 Diema Sport 2 Bulgaria [26]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-414.php')">📺 SuperSport Premier League [27]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-91.php')">📺 beIN Sports MENA 1 [28]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-61.php')">📺 beIN Sports MENA English 1 [29]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-141.php')">📺 Sport 2 Israel [30]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_49')">🕒 20:30 — Italy - Serie C : Novara vs Inter II</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_49">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-18.php')">📺 Sky Sport 255 IT [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-882.php')">📺 Rai Sport Italy [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_50')">🕒 21:00 — Italy - Serie C : Salernitana vs Siracusa</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_50">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-19.php')">📺 Sky Sport 257 IT [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_51')">🕒 21:00 — Italy - Serie C : Crotone vs Benevento</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_51">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-20.php')">📺 Sky Sport 256 IT [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_52')">🕒 21:00 — Italy - Serie C : Casertana vs Team Altamura</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_52">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-21.php')">📺 Sky Sport 259 IT [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_53')">🕒 21:00 — Italy - Serie C : Audace Cerignola vs Picerno</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_53">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-22.php')">📺 Sky Sport 258 IT [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_54')">🕒 21:15 — Portugal - Primeira Liga : Estrela vs Alverca</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_54">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-49.php')">📺 Sport TV1 Portugal [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-466.php')">📺 Diema Sport 2 Bulgaria [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-101.php')">📺 Sport Klub 1 Croatia [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8232172.php')">📺 SD-8232172 [4]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_55')">🕒 21:30 — Spain - La Liga : Sevilla vs Getafe</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_55">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-538.php')">📺 DAZN LaLiga [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-276.php')">📺 LaLigaTV UK [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-451.php')">📺 Viaplay Sports 1 UK [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-771.php')">📺 Premier Sports 1 Ireland [4]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-426.php')">📺 DAZN1 DE [5]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-17.php')">📺 Eleven Sports 4 Poland [6]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-118.php')">📺 beIN Sports 3 France [7]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-375.php')">📺 ESPN Deportes [8]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-396.php')">📺 Ziggo Sport 4 NL [9]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-398.php')">📺 Ziggo Sport 2 NL [10]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-401.php')">📺 Digi Sport 2 Romania [11]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-584.php')">📺 Prima Sport 2 Romania [12]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-712.php')">📺 beIN Sports 1 Malaysia [13]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-917.php')">📺 Cytavision Sports 7 Cyprus [14]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-138.php')">📺 MATCH! Futbol 3 Russia [15]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-139.php')">📺 Arena 3 Premium Serbia [16]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-632.php')">📺 Nova Sports 2 Greece [17]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-432.php')">📺 Arena Sport 1 Croatia [18]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-703.php')">📺 TV4 Sport Live 1 [19]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-475.php')">📺 MAX Sport 4 Bulgaria [20]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-415.php')">📺 SuperSport Laliga [21]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-572.php')">📺 SuperSport MaXimo 1 [22]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-93.php')">📺 beIN Sports MENA 3 [23]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8210732.php')">📺 SD-8210732 [24]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_56')">🕒 21:30 — Spain - Segunda Division : Córdoba vs Las Palmas</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_56">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-539.php')">📺 LALIGA TV Hypermotion [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-530.php')">📺 GOL PLAY ES [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-137.php')">📺 MATCH! Futbol 2 Russia [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-637.php')">📺 Nova Sports Start Greece [4]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-95.php')">📺 beIN Sports MENA 5 [5]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8210641.php')">📺 SD-8210641 [6]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_57')">🕒 22:00 — Argentina - Primera División : Godoy Cruz vs Vélez Sarsfield</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_57">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-387.php')">📺 ESPN Premium Argentina [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-149.php')">📺 ESPN Argentina [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8413787.php')">📺 SD-8413787 [3]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_58')">🕒 23:00 — Colombia - Primera B - Clausura : Leones vs Real Santander</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_58">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8459019.php')">📺 SD-8459019 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_59')">🕒 23:30 — Paraguay - Primera Division - Clausura : Libertad Asuncion vs Club Guarani</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_59">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8433919.php')">📺 SD-8433919 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_60')">🕒 00:00 (+1) — Argentina - Primera División : Belgrano vs Central Córdoba SdE</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_60">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-387.php')">📺 ESPN Premium Argentina [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8413782.php')">📺 SD-8413782 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_61')">🕒 00:00 (+1) — Brazil - Serie B : Botafogo SP vs Vila Nova</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_61">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-81.php')">📺 ESPN BR [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_62')">🕒 00:00 (+1) — Brazil - Brasileirão : Palmeiras vs Sport Recife</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_62">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-15.php')">📺 Premiere BR [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-521.php')">📺 M+ #Vamos ES [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-138.php')">📺 Match! Football 3 Russia [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-142.php')">📺 Sport 3 Israel [4]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_63')">🕒 00:15 (+1) — Argentina - Primera División : Estudiantes vs Aldosivi</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_63">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-388.php')">📺 TNT Sports Argentina [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8413783.php')">📺 SD-8413783 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_64')">🕒 01:00 (+1) — Colombia - Primera A : Boyacá Chicó vs Deportivo Cali</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_64">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-392.php')">📺 Win+ Futbol Colombia [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8469012.php')">📺 SD-8469012 [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_65')">🕒 01:00 (+1) — United States - NCAA Men's Soccer : Pittsburgh vs Michigan St.</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_65">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-664.php')">📺 ACC Network USA [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_66')">🕒 02:00 — Primera B Nacional : All Boys vs San Martin T.</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_66">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8472268.php')">📺 SD-8472268 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_67')">🕒 02:00 — Ecuador - Serie A - Phase 1 : Orense vs Delfin</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_67">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8418522.php')">📺 SD-8418522 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_68')">🕒 02:00 — Brazil - Brasileirão : Flamengo vs Vitória</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_68">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-78.php')">📺 Sportv Brazil [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-88.php')">📺 Premiere BR [2]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_69')">🕒 02:00 — Brazil - Série A : Flamengo RJ vs Vitoria</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_69">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-550.php')">📺 Viaplay Sports 2 UK [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_70')">🕒 02:15 — Argentina - Primera División : Lanús vs River Plate</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_70">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-387.php')">📺 ESPN Premium Argentina [1]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-451.php')">📺 Viaplay Sports 1 UK [2]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-771.php')">📺 Premier Sports 1 Ireland [3]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-49.php')">📺 Sport TV1 Portugal [4]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-134.php')">📺 Arena 1 Premium Serbia [5]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-432.php')">📺 Arena Sport 1 Croatia [6]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-85.php')">📺 ESPN4 Brasil [7]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-142.php')">📺 Sport 3 Israel [8]</button>
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8413786.php')">📺 SD-8413786 [9]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_71')">🕒 03:00 — Costa Rica - League de Ascenso - Gr.2 : Municipal Santa Ana vs Cariari Pococi</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_71">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8447109.php')">📺 SD-8447109 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_72')">🕒 03:10 — Colombia - Primera B - Clausura : Internacional de Palmira vs Patriotas Boyaca</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_72">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-bet8459020.php')">📺 SD-8459020 [1]</button>
+</div></div>
+<div class="event"><h4 onclick="toggleChannels('Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_73')">🕒 05:00 — Liga MX Femenil : Juárez vs Mazatlán</h4>
+<div class="channels" id="Monday_25th_August_2025_Schedule_Time_UK_GMT_Soccer_73">
+<button class="btn-play" onclick="playInIframe('https://daddylivestream.com/embed/stream-643.php')">📺 FOX Deportes USA [1]</button>
+</div></div>
+
+<div id="playerContainer">
+  <div class="player-actions">
+    <button class="ctrl" onclick="toggleFullscreen()">🔳 Fullscreen</button>
+    <button class="ctrl" onclick="togglePlayer()">✖ Chiudi</button>
+  </div>
+  <iframe id="iframePlayer" src="" allowfullscreen></iframe>
+</div>
+</body>
+</html>
