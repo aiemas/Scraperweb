@@ -14,19 +14,36 @@ def make_id(s):
 
 def is_today(day_string):
     try:
+        # Togli la parte dopo il trattino (Schedule Time UK GMT)
         date_part = day_string.split("-")[0].strip()
+        
+        # Rimuovi suffissi tipo "25th"
         for suf in ["th","st","nd","rd",","]:
             date_part = date_part.replace(suf,"")
+        
+        # Spezza in parole
         parts = date_part.strip().split()
         if len(parts) < 3:
             return False
+        
+        # Se la prima parola è il giorno della settimana (Monday, Tuesday ecc.), toglila
+        if parts[0].lower() in [
+            "monday","tuesday","wednesday","thursday","friday","saturday","sunday"
+        ]:
+            parts = parts[1:]
+        
+        # Ora dovrebbe restare ["25","August","2025"]
         day_month_year = " ".join(parts[-3:])
+        
+        # Prova con mese corto, poi lungo
         try:
-            day_dt = datetime.strptime(day_month_year, "%d %b %Y")  # formato abbreviato (es. Aug)
+            day_dt = datetime.strptime(day_month_year, "%d %b %Y")
         except ValueError:
-            day_dt = datetime.strptime(day_month_year, "%d %B %Y")  # formato esteso (es. August)
+            day_dt = datetime.strptime(day_month_year, "%d %B %Y")
+        
         return day_dt.date() == datetime.today().date()
-    except:
+    except Exception as e:
+        print("DEBUG is_today ERROR:", e, "input era:", day_string)
         return False
 
 def adjust_time(time_str, offset_hours=2):
