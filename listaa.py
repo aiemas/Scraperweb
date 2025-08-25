@@ -21,7 +21,10 @@ def is_today(day_string):
         if len(parts) < 3:
             return False
         day_month_year = " ".join(parts[-3:])
-        day_dt = datetime.strptime(day_month_year, "%d %b %Y")
+        try:
+            day_dt = datetime.strptime(day_month_year, "%d %b %Y")  # formato abbreviato (es. Aug)
+        except ValueError:
+            day_dt = datetime.strptime(day_month_year, "%d %B %Y")  # formato esteso (es. August)
         return day_dt.date() == datetime.today().date()
     except:
         return False
