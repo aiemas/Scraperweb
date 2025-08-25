@@ -194,9 +194,9 @@ for day, categories in data_daddy.items():
 
                 # Solo canali SD -> aggiungi 'bet'
                 if ch_name.lower().startswith("sd"):
-                    stream_url = f"https://dlhd.click/embed/stream-bet{ch_id}.php"
+                    stream_url = f"https://daddylivestream.com/stream/stream-bet{ch_id}.php"
                 else:
-                    stream_url = f"https://dlhd.click/embed/stream-{ch_id}.php"
+                    stream_url = f"https://daddylivestream.com/stream/stream-{ch_id}.php"
 
                 safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
                 html += f'<button class="btn-play" onclick="playInIframe(\'{stream_url}\')">📺 {safe_text}</button>\n'
