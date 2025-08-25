@@ -36,7 +36,7 @@ def adjust_time(time_str, offset_hours=2):
     except:
         return time_str
 
-url_daddy = "https://thedaddy.dad/schedule/schedule-generated.php"
+url_daddy = "https://thedaddy.top/schedule/schedule-generated.php"
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
     "Referer": "https://thedaddy.dad/"
@@ -194,9 +194,9 @@ for day, categories in data_daddy.items():
 
                 # Solo canali SD -> aggiungi 'bet'
                 if ch_name.lower().startswith("sd"):
-                    stream_url = f"https://daddylivestream.com/stream/stream-bet{ch_id}.php"
+                    stream_url = f"https://daddylivestream.com/embed/stream-bet{ch_id}.php"
                 else:
-                    stream_url = f"https://daddylivestream.com/stream/stream-{ch_id}.php"
+                    stream_url = f"https://daddylivestream.com/embed/stream-{ch_id}.php"
 
                 safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
                 html += f'<button class="btn-play" onclick="playInIframe(\'{stream_url}\')">📺 {safe_text}</button>\n'
