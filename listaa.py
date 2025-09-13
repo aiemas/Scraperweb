@@ -1,3 +1,13 @@
+#!/usr/bin/env python3
+"""
+generate_index.py
+
+Genera una pagina HTML con gli eventi di DaddyLive.
+- Gestione sottocategorie tipo "All Soccer Events"
+- Filtro SOLO Soccer con ricerca per substring ("soccer" in nome categoria)
+- Player in overlay con fullscreen
+"""
+
 import requests
 import json
 import re
@@ -5,7 +15,7 @@ from datetime import datetime, timedelta
 
 # ====== CONFIG ======
 TIME_OFFSET_HOURS = 2      # +2 ore per l'Italia rispetto all'orario mostrato dal sito
-ONLY_SOCCER = True         # True = mostra solo categoria "Soccer", False = tutte
+ONLY_SOCCER = True         # True = mostra solo categorie che contengono "soccer"
 OUTPUT_FILE = "listaa.html"
 # =====================
 
@@ -21,6 +31,21 @@ def adjust_time(time_str, offset_hours=2):
         return out + (" (+1)" if rolled else "")
     except:
         return time_str
+
+def extract_event_lists(cat_name, events):
+    """
+    Restituisce una lista di tuple (subcat_name, list_of_events).
+    Gestisce sia events come list che come dict (sottocategorie).
+    """
+    if isinstance(events, list):
+        return [(cat_name, events)]
+    if isinstance(events, dict):
+        out = []
+        for sub_name, sub_events in events.items():
+            if isinstance(sub_events, list):
+                out.append((sub_name, sub_events))
+        return out
+    return []
 
 url_daddy = "https://daddylivestream.com/schedule/schedule-generated.php"
 headers = {
@@ -66,7 +91,6 @@ html = f"""<!DOCTYPE html>
   .btn-play {{ background: linear-gradient(180deg, #22c55e, #16a34a); color: white; box-shadow: 0 2px 10px rgba(34,197,94,.25); }}
   .btn-play:hover {{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(34,197,94,.35); }}
 
-  /* Player in sovraimpressione */
   #playerContainer {{
     position: fixed;
     top: 50%;
@@ -133,61 +157,65 @@ function toggleChannels(id) {{
 </script>
 """
 
-# Generazione eventi (senza filtro sulla data)
+# ====== GENERAZIONE EVENTI ======
 for day, categories in data_daddy.items():
     html += f"<h2>{day}</h2>\n"
     for category_name, events in categories.items():
-        if ONLY_SOCCER and category_name.lower() != "soccer":
-            continue
-        html += f"<h3>{category_name}</h3>\n"
-        for idx_event, event in enumerate(events, start=1):
-            event_name = event.get("event", "Senza nome")
-            event_time = event.get("time", "").strip()
-            if not event_time:
+        pairs = extract_event_lists(category_name, events)
+
+        for subcat_name, event_list in pairs:
+            combined_name = f"{category_name} {subcat_name}".lower()
+            if ONLY_SOCCER and 'soccer' not in combined_name:
                 continue
 
-            adj_time = adjust_time(event_time, TIME_OFFSET_HOURS)
-
-            all_channels = []
-            if "channels" in event and isinstance(event["channels"], list):
-                all_channels.extend(event["channels"])
-            if "channels2" in event and isinstance(event["channels2"], list):
-                all_channels.extend(event["channels2"])
-            if not all_channels:
-                continue
-
-            event_id = make_id(f"{day}_{category_name}_{idx_event}")
-            html += f'<div class="event">'
-            html += f'<h4 onclick="toggleChannels(\'{event_id}\')">🕒 {adj_time} — {event_name}</h4>\n'
-            html += f'<div class="channels" id="{event_id}">\n'
-
-            for idx_ch, ch in enumerate(all_channels, start=1):
-                ch_name, ch_id = "Senza nome", ""
-                if isinstance(ch, dict):
-                    ch_name = ch.get("channel_name", "Senza nome")
-                    ch_id = str(ch.get("channel_id", "")).strip()
-                elif isinstance(ch, str):
-                    ch_name = ch
-                    m = re.search(r'\d+', ch)
-                    ch_id = m.group(0) if m else ""
-                else:
+            html += f"<h3>{category_name} — {subcat_name}</h3>\n"
+            for idx_event, event in enumerate(event_list, start=1):
+                event_name = event.get("event", "Senza nome")
+                event_time = event.get("time", "").strip()
+                if not event_time:
                     continue
 
-                if not ch_id:
+                adj_time = adjust_time(event_time, TIME_OFFSET_HOURS)
+
+                all_channels = []
+                if "channels" in event and isinstance(event["channels"], list):
+                    all_channels.extend(event["channels"])
+                if "channels2" in event and isinstance(event["channels2"], list):
+                    all_channels.extend(event["channels2"])
+                if not all_channels:
                     continue
 
-                # Solo canali SD -> aggiungi 'bet'
-                if ch_name.lower().startswith("sd"):
-                    stream_url = f"https://daddylivestream.com/embed/stream-bet{ch_id}.php"
-                else:
-                    stream_url = f"https://daddylivestream.com/embed/stream-{ch_id}.php"
+                event_id = make_id(f"{day}_{category_name}_{subcat_name}_{idx_event}")
+                html += f'<div class="event">'
+                html += f'<h4 onclick="toggleChannels(\'{event_id}\')">🕒 {adj_time} — {event_name}</h4>\n'
+                html += f'<div class="channels" id="{event_id}">\n'
 
-                safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
-                html += f'<button class="btn-play" onclick="playInIframe(\'{stream_url}\')">📺 {safe_text}</button>\n'
+                for idx_ch, ch in enumerate(all_channels, start=1):
+                    ch_name, ch_id = "Senza nome", ""
+                    if isinstance(ch, dict):
+                        ch_name = ch.get("channel_name", "Senza nome")
+                        ch_id = str(ch.get("channel_id", "")).strip()
+                    elif isinstance(ch, str):
+                        ch_name = ch
+                        m = re.search(r'\d+', ch)
+                        ch_id = m.group(0) if m else ""
+                    else:
+                        continue
 
-            html += '</div></div>\n'
+                    if not ch_id:
+                        continue
 
-# Player in sovraimpressione
+                    if 'sd' in ch_name.lower():
+                        stream_url = f"https://daddylivestream.com/embed/stream-bet{ch_id}.php"
+                    else:
+                        stream_url = f"https://daddylivestream.com/embed/stream-{ch_id}.php"
+
+                    safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
+                    html += f'<button class="btn-play" onclick="playInIframe(\'{stream_url}\')">📺 {safe_text}</button>\n'
+
+                html += '</div></div>\n'
+
+# ====== PLAYER OVERLAY ======
 html += """
 <div id="playerContainer">
   <div class="player-actions">
