@@ -22,7 +22,7 @@ def adjust_time(time_str, offset_hours=2):
     except:
         return time_str
 
-url_daddy = "https://thedaddy.top/schedule/schedule-generated.php"
+url_daddy = "https://daddylivestream.com/schedule/schedule-generated.php"
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
     "Referer": "https://thedaddy.dad/"
