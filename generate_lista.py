@@ -2,7 +2,7 @@ import requests
 import json
 
 # URL pubblica della tua lista JSON
-url = "https://test34344.herokuapp.com/wise/testWise.php?numList=195&tkn=wise"
+url = "http://elizabethharmon.zapto.org/elsup/wiseManager.php"
 
 # Scarica la pagina
 print(f"Scarico JSON da: {url}")
