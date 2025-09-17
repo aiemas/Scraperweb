@@ -205,11 +205,8 @@ for day, categories in data_daddy.items():
                     if not ch_id:
                         continue
 
-                    # ✅ Modifica qui: aggiunto ?err=0
-                    if 'sd' in ch_name.lower():
-                        stream_url = f"https://daddylivestream.com/embed/stream-bet{ch_id}.php?err=0"
-                    else:
-                        stream_url = f"https://daddylivestream.com/embed/stream-{ch_id}.php?err=0"
+                    # ✅ Usa il link reale senza embed
+                    stream_url = f"https://dlhd.dad/watch.php?id={ch_id}"
 
                     safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
                     html += f'<button class="btn-play" onclick="playInIframe(\'{stream_url}\')">📺 {safe_text}</button>\n'
