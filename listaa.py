@@ -206,8 +206,7 @@ for day, categories in data_daddy.items():
                         continue
 
                     # ✅ Usa il link reale senza embed
-                    stream_url = f"https://dlhd.dad/embed/stream-?id={ch_id}"
-
+                    stream_url = f"https://dlhd.dad/embed/stream-{ch_id}.php"
                     safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
                     html += f'<button class="btn-play" onclick="playInIframe(\'{stream_url}\')">📺 {safe_text}</button>\n'
 
