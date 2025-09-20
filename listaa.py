@@ -91,6 +91,10 @@ html = f"""<!DOCTYPE html>
   .btn-play {{ background: linear-gradient(180deg, #22c55e, #16a34a); color: white; box-shadow: 0 2px 10px rgba(34,197,94,.25); }}
   .btn-play:hover {{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(34,197,94,.35); }}
 
+  /* 🔵 Stile per i pulsanti Karmakurama */
+  .btn-karma {{ background: linear-gradient(180deg, #3b82f6, #1d4ed8); color: white; box-shadow: 0 2px 10px rgba(59,130,246,.25); }}
+  .btn-karma:hover {{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(59,130,246,.35); }}
+
   #playerContainer {{
     position: fixed;
     top: 50%;
@@ -205,10 +209,17 @@ for day, categories in data_daddy.items():
                     if not ch_id:
                         continue
 
-                    # ✅ Usa il link reale senza embed
-                    stream_url = f"https://dlhd.dad/embed/stream-{ch_id}.php"
+                    # ✅ Link Daddy
+                    stream_url_daddy = f"https://dlhd.dad/embed/stream-{ch_id}.php"
+                    # ✅ Link Karmakurama
+                    stream_url_karma = f"https://ava.karmakurama.com/?id={ch_id}"
+
                     safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
-                    html += f'<button class="btn-play" onclick="playInIframe(\'{stream_url}\')">📺 {safe_text}</button>\n'
+
+                    # Pulsante Daddy (verde)
+                    html += f'<button class="btn-play" onclick="playInIframe(\'{stream_url_daddy}\')">📺 {safe_text} (Daddy)</button>\n'
+                    # Pulsante Karma (blu)
+                    html += f'<button class="btn-karma" onclick="playInIframe(\'{stream_url_karma}\')">🔥 {safe_text} (Karma)</button>\n'
 
                 html += '</div></div>\n'
 
