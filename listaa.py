@@ -171,8 +171,8 @@ for day, categories in data_daddy.items():
                     safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
 
                     # 🔗 Apri in nuova scheda
-                    html += f'<a href="{stream_url_daddy}" target="_blank"><button class="btn-play">📺 {safe_text} (Daddy)</button></a>\n'
-                    html += f'<a href="{stream_url_karma}" target="_blank"><button class="btn-karma">🔥 {safe_text} (Karma)</button></a>\n'
+                    html += f'<a href="{stream_url_daddy}" target="_blank" rel="noopener noreferrer"><button class="btn-play">📺 {safe_text} (Daddy)</button></a>\n'
+                    html += f'<a href="{stream_url_karma}" target="_blank" rel="noopener noreferrer"><button class="btn-karma">🔥 {safe_text} (Karma)</button></a>\n'
 
                 html += '</div></div>\n'
 
