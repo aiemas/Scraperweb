@@ -13,7 +13,11 @@ import re
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-URL = "https://daddylivestream.com/schedule/schedule-generated.php"
+url_daddy = "https://daddylivestream.com/schedule/schedule-generated.php"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    "Referer": "https://thedaddy.dad/"
+}
 
 def main():
     resp = requests.get(URL, verify=False)
