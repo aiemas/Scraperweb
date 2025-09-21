@@ -13,7 +13,7 @@ import re
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-URL = "https://daddylivestream.com/schedule/schedule-generated.php"
+URL = "https://dlhd.dad/schedule/schedule-generated.php"
 
 def main():
     resp = requests.get(URL, verify=False)
