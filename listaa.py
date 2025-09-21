@@ -5,7 +5,7 @@ generate_index.py
 Genera una pagina HTML con gli eventi di DaddyLive.
 - Gestione sottocategorie tipo "All Soccer Events"
 - Filtro SOLO Soccer con ricerca per substring ("soccer" in nome categoria)
-- Player in overlay con fullscreen
+- I link si aprono in una nuova scheda invece che nel player interno
 """
 
 import requests
@@ -33,10 +33,6 @@ def adjust_time(time_str, offset_hours=2):
         return time_str
 
 def extract_event_lists(cat_name, events):
-    """
-    Restituisce una lista di tuple (subcat_name, list_of_events).
-    Gestisce sia events come list che come dict (sottocategorie).
-    """
     if isinstance(events, list):
         return [(cat_name, events)]
     if isinstance(events, dict):
@@ -75,7 +71,7 @@ html = f"""<!DOCTYPE html>
 <title>Lista Eventi Daddy</title>
 <style>
   :root {{ color-scheme: dark; }}
-  body {{ font-family: system-ui, Arial, sans-serif; margin: 20px; padding-bottom: 60vh; background: #0f1115; color: #f1f5f9; }}
+  body {{ font-family: system-ui, Arial, sans-serif; margin: 20px; background: #0f1115; color: #f1f5f9; }}
   input[type="text"] {{ width: 100%; padding: 10px 14px; margin-bottom: 20px; font-size: 16px; border-radius: 10px; border: 1px solid #2a2f3a; background:#131722; color:#e5e7eb; outline: none; }}
   input[type="text"]::placeholder {{ color:#94a3b8; }}
 
@@ -91,32 +87,13 @@ html = f"""<!DOCTYPE html>
   .btn-play {{ background: linear-gradient(180deg, #22c55e, #16a34a); color: white; box-shadow: 0 2px 10px rgba(34,197,94,.25); }}
   .btn-play:hover {{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(34,197,94,.35); }}
 
-  /* 🔵 Stile per i pulsanti Karmakurama */
   .btn-karma {{ background: linear-gradient(180deg, #3b82f6, #1d4ed8); color: white; box-shadow: 0 2px 10px rgba(59,130,246,.25); }}
   .btn-karma:hover {{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(59,130,246,.35); }}
-
-  #playerContainer {{
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    height: 60%;
-    background-color: black;
-    z-index: 9999;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,.7);
-    display: none;
-  }}
-  #iframePlayer {{ width: 100%; height: 100%; border: none; }}
-  .player-actions {{ position:absolute; top:6px; right:10px; z-index:10001; display:flex; gap:8px; }}
-  .ctrl {{ padding: 6px 10px; font-size: 13px; border-radius: 8px; border: 1px solid #2a2f3a; background:#111827; color:#e5e7eb; cursor:pointer; }}
-  .time-note {{ font-size:12px; color:#94a3b8; margin: 0 0 10px 2px; }}
 </style>
 </head>
 <body>
 <h1>Lista Eventi Daddy (orari mostrati = UK +{TIME_OFFSET_HOURS}h)</h1>
-<p class="time-note">Esempio: se sul sito è 19:15, qui vedrai 21:15.</p>
+<p style="font-size:12px;color:#94a3b8;">Esempio: se sul sito è 19:15, qui vedrai 21:15.</p>
 <input type="text" id="searchInput" placeholder="Cerca evento o canale...">
 
 <script>
@@ -131,27 +108,6 @@ document.addEventListener("DOMContentLoaded", function() {{
         }});
     }});
 }});
-
-function playInIframe(url) {{
-    const container = document.getElementById('playerContainer');
-    const iframe = document.getElementById('iframePlayer');
-    iframe.src = url;
-    container.style.display = 'block';
-}}
-
-function toggleFullscreen() {{
-    const iframe = document.getElementById('iframePlayer');
-    if (iframe.requestFullscreen) {{ iframe.requestFullscreen(); }}
-    else if (iframe.webkitRequestFullscreen) {{ iframe.webkitRequestFullscreen(); }}
-    else if (iframe.mozRequestFullScreen) {{ iframe.mozRequestFullScreen(); }}
-    else if (iframe.msRequestFullscreen) {{ iframe.msRequestFullscreen(); }}
-}}
-
-function togglePlayer() {{
-    const container = document.getElementById('playerContainer');
-    if (container.style.display === 'none') {{ container.style.display = 'block'; }}
-    else {{ container.style.display = 'none'; document.getElementById('iframePlayer').src = ""; }}
-}}
 
 function toggleChannels(id) {{
     const elem = document.getElementById(id);
@@ -209,32 +165,18 @@ for day, categories in data_daddy.items():
                     if not ch_id:
                         continue
 
-                    # ✅ Link Daddy
                     stream_url_daddy = f"https://dlhd.dad/embed/stream-{ch_id}.php"
-                    # ✅ Link Karmakurama
                     stream_url_karma = f"https://ava.karmakurama.com/?id={ch_id}"
 
                     safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
 
-                    # Pulsante Daddy (verde)
-                    html += f'<button class="btn-play" onclick="playInIframe(\'{stream_url_daddy}\')">📺 {safe_text} (Daddy)</button>\n'
-                    # Pulsante Karma (blu)
-                    html += f'<button class="btn-karma" onclick="playInIframe(\'{stream_url_karma}\')">🔥 {safe_text} (Karma)</button>\n'
+                    # 🔗 Apri in nuova scheda
+                    html += f'<a href="{stream_url_daddy}" target="_blank"><button class="btn-play">📺 {safe_text} (Daddy)</button></a>\n'
+                    html += f'<a href="{stream_url_karma}" target="_blank"><button class="btn-karma">🔥 {safe_text} (Karma)</button></a>\n'
 
                 html += '</div></div>\n'
 
-# ====== PLAYER OVERLAY ======
-html += """
-<div id="playerContainer">
-  <div class="player-actions">
-    <button class="ctrl" onclick="toggleFullscreen()">🔳 Fullscreen</button>
-    <button class="ctrl" onclick="togglePlayer()">✖ Chiudi</button>
-  </div>
-  <iframe id="iframePlayer" src="" allowfullscreen></iframe>
-</div>
-</body>
-</html>
-"""
+html += "</body></html>"
 
 with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
     f.write(html)
