@@ -5,180 +5,79 @@ generate_index.py
 Genera una pagina HTML con gli eventi di DaddyLive.
 - Gestione sottocategorie tipo "All Soccer Events"
 - Filtro SOLO Soccer con ricerca per substring ("soccer" in nome categoria)
-- I link si aprono in una nuova scheda invece che nel player interno
+- Pulsanti Daddy + Karmakurama che aprono in browser esterno
 """
 
 import requests
 import json
 import re
-from datetime import datetime, timedelta
 
-# ====== CONFIG ======
-TIME_OFFSET_HOURS = 2      # +2 ore per l'Italia rispetto all'orario mostrato dal sito
-ONLY_SOCCER = True         # True = mostra solo categorie che contengono "soccer"
-OUTPUT_FILE = "listaa.html"
-# =====================
+# URL JSON eventi (modifica se diverso)
+URL = "https://dlhd.dad/events.json"
 
-def make_id(s):
-    return re.sub(r'\W+', '_', s)
+def main():
+    resp = requests.get(URL)
+    resp.raise_for_status()
+    data = resp.json()
 
-def adjust_time(time_str, offset_hours=2):
-    try:
-        t = datetime.strptime(time_str.strip(), "%H:%M")
-        t2 = t + timedelta(hours=offset_hours)
-        rolled = (t2.day != t.day)
-        out = t2.strftime("%H:%M")
-        return out + (" (+1)" if rolled else "")
-    except:
-        return time_str
+    # Filtra solo categorie con "soccer"
+    soccer_categories = [
+        cat for cat in data.get("categories", [])
+        if "soccer" in cat.get("name", "").lower()
+    ]
 
-def extract_event_lists(cat_name, events):
-    if isinstance(events, list):
-        return [(cat_name, events)]
-    if isinstance(events, dict):
-        out = []
-        for sub_name, sub_events in events.items():
-            if isinstance(sub_events, list):
-                out.append((sub_name, sub_events))
-        return out
-    return []
-
-url_daddy = "https://daddylivestream.com/schedule/schedule-generated.php"
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-    "Referer": "https://thedaddy.dad/"
-}
-
-print(f"Scarico JSON Daddy da: {url_daddy}")
-try:
-    response = requests.get(url_daddy, headers=headers, timeout=15)
-    response.raise_for_status()
-except requests.RequestException as e:
-    print(f"❌ Errore richiesta: {e}")
-    exit(1)
-
-try:
-    data_daddy = response.json()
-except json.JSONDecodeError as e:
-    print(f"❌ Errore parsing JSON Daddy: {e}")
-    print("📄 Contenuto ricevuto:", response.text[:200], "...")
-    exit(1)
-
-html = f"""<!DOCTYPE html>
-<html>
+    html = """<!DOCTYPE html>
+<html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>Lista Eventi Daddy</title>
+<title>DaddyLive Soccer Events</title>
 <style>
-  :root {{ color-scheme: dark; }}
-  body {{ font-family: system-ui, Arial, sans-serif; margin: 20px; background: #0f1115; color: #f1f5f9; }}
-  input[type="text"] {{ width: 100%; padding: 10px 14px; margin-bottom: 20px; font-size: 16px; border-radius: 10px; border: 1px solid #2a2f3a; background:#131722; color:#e5e7eb; outline: none; }}
-  input[type="text"]::placeholder {{ color:#94a3b8; }}
-
-  h1 {{ margin-bottom: 12px; font-weight: 700; }}
-  h2 {{ margin-top: 24px; color: #93c5fd; }}
-  h3 {{ margin: 12px 0 8px; color: #a5b4fc; }}
-  h4 {{ cursor: pointer; margin: 6px 0; padding: 10px 12px; background: #151a28; border: 1px solid #202638; border-radius: 12px; }}
-
-  .event {{ margin-bottom: 12px; padding: 10px; background: #111623; border: 1px solid #1f2435; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,.35); }}
-  .channels {{ margin-left: 8px; margin-top: 8px; display: none; }}
-
-  button {{ margin: 6px 6px 0 0; padding: 10px 14px; font-size: 14px; border: none; border-radius: 10px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }}
-  .btn-play {{ background: linear-gradient(180deg, #22c55e, #16a34a); color: white; box-shadow: 0 2px 10px rgba(34,197,94,.25); }}
-  .btn-play:hover {{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(34,197,94,.35); }}
-
-  .btn-karma {{ background: linear-gradient(180deg, #3b82f6, #1d4ed8); color: white; box-shadow: 0 2px 10px rgba(59,130,246,.25); }}
-  .btn-karma:hover {{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(59,130,246,.35); }}
+body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 20px; }
+h2 { margin-top: 30px; color: #f0f0f0; }
+button { padding: 10px 16px; border: none; border-radius: 8px; margin: 6px; cursor: pointer; font-size: 15px; transition: all .2s; }
+.btn-play { background: linear-gradient(180deg, #22c55e, #15803d); color: white; box-shadow: 0 2px 10px rgba(34,197,94,.25); }
+.btn-play:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(34,197,94,.35); }
+.btn-karma { background: linear-gradient(180deg, #3b82f6, #1d4ed8); color: white; box-shadow: 0 2px 10px rgba(59,130,246,.25); }
+.btn-karma:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(59,130,246,.35); }
 </style>
 </head>
 <body>
-<h1>Lista Eventi Daddy (orari mostrati = UK +{TIME_OFFSET_HOURS}h)</h1>
-<p style="font-size:12px;color:#94a3b8;">Esempio: se sul sito è 19:15, qui vedrai 21:15.</p>
-<input type="text" id="searchInput" placeholder="Cerca evento o canale...">
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {{
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('input', function() {{
-        const filter = searchInput.value.toLowerCase();
-        const events = document.querySelectorAll('div.event');
-        events.forEach(eventDiv => {{
-            const text = eventDiv.textContent.toLowerCase();
-            eventDiv.style.display = text.includes(filter) ? '' : 'none';
-        }});
-    }});
-}});
-
-function toggleChannels(id) {{
-    const elem = document.getElementById(id);
-    if (elem.style.display === 'none' || !elem.style.display) {{ elem.style.display = 'block'; }}
-    else {{ elem.style.display = 'none'; }}
-}}
-</script>
+<h1>⚽ DaddyLive Soccer Events</h1>
 """
 
-# ====== GENERAZIONE EVENTI ======
-for day, categories in data_daddy.items():
-    html += f"<h2>{day}</h2>\n"
-    for category_name, events in categories.items():
-        pairs = extract_event_lists(category_name, events)
+    for cat in soccer_categories:
+        cat_name = cat.get("name", "Unknown")
+        html += f"<h2>{cat_name}</h2>\n"
 
-        for subcat_name, event_list in pairs:
-            combined_name = f"{category_name} {subcat_name}".lower()
-            if ONLY_SOCCER and 'soccer' not in combined_name:
-                continue
+        all_channels = []
+        for sub in cat.get("subcategories", []):
+            all_channels.extend(sub.get("channels", []))
 
-            html += f"<h3>{category_name} — {subcat_name}</h3>\n"
-            for idx_event, event in enumerate(event_list, start=1):
-                event_name = event.get("event", "Senza nome")
-                event_time = event.get("time", "").strip()
-                if not event_time:
-                    continue
+        for idx_ch, ch in enumerate(all_channels, start=1):
+            ch_id = ch.get("id")
+            ch_name = ch.get("name", f"Channel {ch_id}")
 
-                adj_time = adjust_time(event_time, TIME_OFFSET_HOURS)
+            # ✅ Link Daddy
+            stream_url_daddy = f"https://dlhd.dad/embed/stream-{ch_id}.php"
+            # ✅ Link Karmakurama
+            stream_url_karma = f"https://ava.karmakurama.com/?id={ch_id}"
 
-                all_channels = []
-                if "channels" in event and isinstance(event["channels"], list):
-                    all_channels.extend(event["channels"])
-                if "channels2" in event and isinstance(event["channels2"], list):
-                    all_channels.extend(event["channels2"])
-                if not all_channels:
-                    continue
+            safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
 
-                event_id = make_id(f"{day}_{category_name}_{subcat_name}_{idx_event}")
-                html += f'<div class="event">'
-                html += f'<h4 onclick="toggleChannels(\'{event_id}\')">🕒 {adj_time} — {event_name}</h4>\n'
-                html += f'<div class="channels" id="{event_id}">\n'
+            # Pulsante Daddy → apre nel browser esterno
+            html += f'<a href="{stream_url_daddy}" target="_blank" rel="noopener noreferrer"><button class="btn-play">📺 {safe_text} (Daddy)</button></a>\n'
 
-                for idx_ch, ch in enumerate(all_channels, start=1):
-                    ch_name, ch_id = "Senza nome", ""
-                    if isinstance(ch, dict):
-                        ch_name = ch.get("channel_name", "Senza nome")
-                        ch_id = str(ch.get("channel_id", "")).strip()
-                    elif isinstance(ch, str):
-                        ch_name = ch
-                        m = re.search(r'\d+', ch)
-                        ch_id = m.group(0) if m else ""
-                    else:
-                        continue
+            # Pulsante Karma → apre nel browser esterno
+            html += f'<a href="{stream_url_karma}" target="_blank" rel="noopener noreferrer"><button class="btn-karma">🔥 {safe_text} (Karma)</button></a>\n'
 
-                    if not ch_id:
-                        continue
+    html += """
+</body>
+</html>
+"""
 
-                    stream_url_daddy = f"https://dlhd.dad/embed/stream-{ch_id}.php"
-                    stream_url_karma = f"https://ava.karmakurama.com/?id={ch_id}"
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html)
+    print("✅ File index.html generato con successo.")
 
-                    safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
-
-                    # 🔗 Apri in nuova scheda
-                    html += f'<a href="{stream_url_daddy}" target="_blank" rel="noopener noreferrer"><button class="btn-play">📺 {safe_text} (Daddy)</button></a>\n'
-                    html += f'<a href="{stream_url_karma}" target="_blank" rel="noopener noreferrer"><button class="btn-karma">🔥 {safe_text} (Karma)</button></a>\n'
-
-                html += '</div></div>\n'
-
-html += "</body></html>"
-
-with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-    f.write(html)
-
-print(f"✅ File '{OUTPUT_FILE}' creato con successo!")
+if __name__ == "__main__":
+    main()
