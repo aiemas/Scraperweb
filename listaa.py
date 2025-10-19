@@ -12,6 +12,10 @@ import requests
 import json
 import re
 from datetime import datetime, timedelta
+import urllib3
+
+# 🔇 Disattiva warning SSL (non critici)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # ====== CONFIG ======
 TIME_OFFSET_HOURS = 2      # +2 ore per l'Italia rispetto all'orario mostrato dal sito
@@ -55,7 +59,8 @@ headers = {
 
 print(f"Scarico JSON Daddy da: {url_daddy}")
 try:
-    response = requests.get(url_daddy, headers=headers, timeout=15)
+    # 🔐 Ignora verifica certificato SSL (per siti con certificato non valido)
+    response = requests.get(url_daddy, headers=headers, timeout=15, verify=False)
     response.raise_for_status()
 except requests.RequestException as e:
     print(f"❌ Errore richiesta: {e}")
