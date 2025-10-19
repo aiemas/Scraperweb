@@ -47,7 +47,7 @@ def extract_event_lists(cat_name, events):
         return out
     return []
 
-url_daddy = "https://daddylivestream.com/schedule/schedule-generated.php"
+url_daddy = "https://dlhd.dad/"
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
     "Referer": "https://thedaddy.dad/"
