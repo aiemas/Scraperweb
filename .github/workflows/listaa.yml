@@ -18,7 +18,7 @@ jobs:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install beautifulsoup4
 
       - name: Run script
         run: python listaa.py
