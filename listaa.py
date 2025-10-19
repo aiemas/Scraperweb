@@ -13,6 +13,7 @@ import json
 import re
 from datetime import datetime, timedelta
 import urllib3
+from bs4 import BeautifulSoup
 
 # 🔇 Disattiva warning SSL (non critici)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -51,28 +52,59 @@ def extract_event_lists(cat_name, events):
         return out
     return []
 
+# =================== NUOVA PARTE (scraping HTML invece di JSON) ===================
 url_daddy = "https://dlhd.dad/index.php?cat=All+Soccer+Events"
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
     "Referer": "https://thedaddy.dad/"
 }
 
-print(f"Scarico JSON Daddy da: {url_daddy}")
+print(f"🌐 Scarico pagina Daddy da: {url_daddy}")
 try:
-    # 🔐 Ignora verifica certificato SSL (per siti con certificato non valido)
     response = requests.get(url_daddy, headers=headers, timeout=15, verify=False)
     response.raise_for_status()
 except requests.RequestException as e:
     print(f"❌ Errore richiesta: {e}")
     exit(1)
 
+# Usa BeautifulSoup per estrarre eventi
 try:
-    data_daddy = response.json()
-except json.JSONDecodeError as e:
-    print(f"❌ Errore parsing JSON Daddy: {e}")
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    events = []
+    for a in soup.select("a[href*='watch.php?id=']"):
+        name = a.get_text(strip=True)
+        href = a.get("href")
+        if not href:
+            continue
+        if not href.startswith("http"):
+            href = "https://dlhd.dad/" + href.lstrip("/")
+        # Estraggo id numerico
+        m = re.search(r"id=(\d+)", href)
+        if not m:
+            continue
+        ch_id = m.group(1)
+        events.append({
+            "event": name,
+            "time": "",  # Daddy non fornisce orari precisi qui
+            "channels": [{"channel_name": name, "channel_id": ch_id}]
+        })
+
+    if not events:
+        print("⚠️ Nessun evento trovato nella pagina Daddy.")
+    else:
+        print(f"✅ Trovati {len(events)} eventi da Daddy.")
+
+    # Creiamo una struttura fittizia simile a quella JSON per mantenere compatibilità
+    data_daddy = {"Today": {"All Soccer Events": events}}
+
+except Exception as e:
+    print(f"❌ Errore durante lo scraping HTML Daddy: {e}")
     print("📄 Contenuto ricevuto:", response.text[:200], "...")
     exit(1)
+# ================================================================================
 
+# ====== HTML GENERATION (resto invariato) ======
 html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -96,7 +128,6 @@ html = f"""<!DOCTYPE html>
   .btn-play {{ background: linear-gradient(180deg, #22c55e, #16a34a); color: white; box-shadow: 0 2px 10px rgba(34,197,94,.25); }}
   .btn-play:hover {{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(34,197,94,.35); }}
 
-  /* 🔵 Stile per i pulsanti Karmakurama */
   .btn-karma {{ background: linear-gradient(180deg, #3b82f6, #1d4ed8); color: white; box-shadow: 0 2px 10px rgba(59,130,246,.25); }}
   .btn-karma:hover {{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(59,130,246,.35); }}
 
@@ -181,10 +212,7 @@ for day, categories in data_daddy.items():
             for idx_event, event in enumerate(event_list, start=1):
                 event_name = event.get("event", "Senza nome")
                 event_time = event.get("time", "").strip()
-                if not event_time:
-                    continue
-
-                adj_time = adjust_time(event_time, TIME_OFFSET_HOURS)
+                adj_time = adjust_time(event_time, TIME_OFFSET_HOURS) if event_time else "--:--"
 
                 all_channels = []
                 if "channels" in event and isinstance(event["channels"], list):
@@ -200,30 +228,17 @@ for day, categories in data_daddy.items():
                 html += f'<div class="channels" id="{event_id}">\n'
 
                 for idx_ch, ch in enumerate(all_channels, start=1):
-                    ch_name, ch_id = "Senza nome", ""
-                    if isinstance(ch, dict):
-                        ch_name = ch.get("channel_name", "Senza nome")
-                        ch_id = str(ch.get("channel_id", "")).strip()
-                    elif isinstance(ch, str):
-                        ch_name = ch
-                        m = re.search(r'\d+', ch)
-                        ch_id = m.group(0) if m else ""
-                    else:
-                        continue
-
+                    ch_name = ch.get("channel_name", "Senza nome")
+                    ch_id = str(ch.get("channel_id", "")).strip()
                     if not ch_id:
                         continue
 
-                    # ✅ Link Daddy
                     stream_url_daddy = f"https://dlhd.dad/embed/stream-{ch_id}.php"
-                    # ✅ Link Karmakurama
                     stream_url_karma = f"https://ava.karmakurama.com/?id={ch_id}"
 
                     safe_text = f"{ch_name} [{idx_ch}]".replace('"', '&quot;').replace("'", "\\'")
 
-                    # Pulsante Daddy (verde)
                     html += f'<button class="btn-play" onclick="playInIframe(\'{stream_url_daddy}\')">📺 {safe_text} (Daddy)</button>\n'
-                    # Pulsante Karma (blu)
                     html += f'<button class="btn-karma" onclick="playInIframe(\'{stream_url_karma}\')">🔥 {safe_text} (Karma)</button>\n'
 
                 html += '</div></div>\n'
