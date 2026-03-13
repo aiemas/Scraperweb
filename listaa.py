@@ -21,7 +21,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 TIME_OFFSET_HOURS = 2      # +2 ore per l'Italia rispetto all'orario mostrato dal sito
 ONLY_SOCCER = True         # True = mostra solo categorie che contengono "soccer"
 OUTPUT_FILE = "listaa.html"
-URL_DADDY = "https://dlhd.dad/index.php?cat=All+Soccer+Events"
+URL_DADDY = "https://dlstreams.top/index.php?cat=All+Soccer+Events"
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
     "Referer": "https://thedaddy.dad/"
