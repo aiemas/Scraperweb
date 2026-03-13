@@ -211,7 +211,7 @@ for day, categories in data_daddy.items():
                         continue
 
                     # ✅ Link Daddy
-                    stream_url_daddy = f"https://dlhd.dad/embed/stream-{ch_id}.php"
+                    stream_url_daddy = f"https://dlstreams.top/embed/stream-{ch_id}.php"
                     # ✅ Link Karmakurama
                     stream_url_karma = f"https://ava.karmakurama.com/?id={ch_id}"
 
