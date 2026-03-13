@@ -263,7 +263,7 @@ for idx,event in enumerate(events,1):
 
         safe=ch["name"].replace('"','&quot;')
 
-        html+=f'<button onclick="playInIframe(\'{ch["url"]}\')">📺 {safe} [{i}]</button>'
+        html+=f'<button onclick="window.open(\'{ch["url"]}\',\'_blank\')">📺 {safe} [{i}]</button>'
 
     html+='</div></div>'
 
