@@ -10,7 +10,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 TIME_OFFSET_HOURS = 2
 OUTPUT_FILE = "listaa.html"
 
-URL_DADDY = "https://dlstreams.top/index.php?cat=Soccer"
+URL_DADDY = "https://dlstreams.top/index.php?cat=All+Soccer+Events"
 
 HEADERS = {
 "User-Agent": "Mozilla/5.0",
