@@ -1,1 +1,11 @@
-<meta http-equiv="refresh" content="0; url=https://streamingcommunityz.pink">
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script>
+window.location.href = "https://streamingcommunityz.pink";
+</script>
+</head>
+<body>
+</body>
+</html>
