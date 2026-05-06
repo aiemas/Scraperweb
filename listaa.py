@@ -13,26 +13,20 @@ OUTPUT_FILE = "listaa.html"
 URL_DADDY = "https://dlstreams.top/index.php?cat=All+Soccer+Events"
 
 HEADERS = {
-"User-Agent": "Mozilla/5.0",
-"Referer": "https://thedaddy.dad/"
+    "User-Agent": "Mozilla/5.0",
+    "Referer": "https://thedaddy.dad/"
 }
 
 def make_id(s):
     return re.sub(r'\W+','_',s)
 
 def adjust_time(time_str,offset=2):
-
     try:
-
         t=datetime.strptime(time_str,"%H:%M")
         t2=t+timedelta(hours=offset)
-
         rolled=(t2.day!=t.day)
-
         out=t2.strftime("%H:%M")
-
         return out+(" (+1)" if rolled else "")
-
     except:
         return time_str
 
@@ -40,45 +34,40 @@ def adjust_time(time_str,offset=2):
 print("Scarico pagina Daddy...")
 
 r=requests.get(URL_DADDY,headers=HEADERS,verify=False)
-
 html_page=r.text
 
 events=[]
 
 blocks=re.findall(
-r'schedule__time.*?data-time="(.*?)".*?schedule__eventTitle">(.*?)<.*?schedule__channels">(.*?)</div>',
-html_page,
-re.S
+    r'schedule__time.*?data-time="(.*?)".*?schedule__eventTitle">(.*?)<.*?schedule__channels">(.*?)</div>',
+    html_page,
+    re.S
 )
 
 for time_str,title,channels_html in blocks:
 
     title=re.sub("<.*?>","",title).strip()
-
     adj_time=adjust_time(time_str,TIME_OFFSET_HOURS)
 
     channels=re.findall(
-    r'href="/watch\.php\?id=(\d+)".*?>(.*?)<',
-    channels_html
+        r'href="/watch\.php\?id=(\d+)".*?>(.*?)<',
+        channels_html
     )
 
     ch_list=[]
 
     for ch_id,ch_name in channels:
-
         stream_url=f"https://dlstreams.top/embed/stream-{ch_id}.php"
-
         ch_list.append({
-        "name":ch_name.strip(),
-        "url":stream_url
+            "name":ch_name.strip(),
+            "url":stream_url
         })
 
     if ch_list:
-
         events.append({
-        "time":adj_time,
-        "event":title,
-        "channels":ch_list
+            "time":adj_time,
+            "event":title,
+            "channels":ch_list
         })
 
 
@@ -139,25 +128,29 @@ color:white;
 
 #playerContainer {{
 position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-width:80%;
-height:60%;
-background:black;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.9);
 z-index:9999;
 display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
 }}
 
 #iframePlayer {{
-width:100%;
-height:100%;
+width:90%;
+height:80%;
 border:none;
+border-radius:10px;
 }}
 
 .ctrl {{
 background:#1f2937;
-margin:4px;
+margin:5px;
+padding:8px 12px;
 }}
 
 </style>
@@ -205,31 +198,28 @@ e.style.display="none";
 function playInIframe(url){{
 
 var c=document.getElementById("playerContainer");
-
 var i=document.getElementById("iframePlayer");
 
-i.src=url;
+i.src="";
+setTimeout(function(){{
+    i.src=url;
+}},100);
 
-c.style.display="block";
+c.style.display="flex";
 
 }}
 
 function togglePlayer(){{
-
 var c=document.getElementById("playerContainer");
-
 c.style.display="none";
-
 document.getElementById("iframePlayer").src="";
-
 }}
 
 function toggleFullscreen(){{
-
 var iframe=document.getElementById("iframePlayer");
-
-if(iframe.requestFullscreen){{iframe.requestFullscreen();}}
-
+if(iframe.requestFullscreen){{
+    iframe.requestFullscreen();
+}}
 }}
 
 function toggleChannels(id){{
@@ -237,13 +227,9 @@ function toggleChannels(id){{
 var e=document.getElementById(id);
 
 if(e.style.display==="none"||!e.style.display){{
-
-e.style.display="block";
-
+    e.style.display="block";
 }}else{{
-
-e.style.display="none";
-
+    e.style.display="none";
 }}
 
 }}
@@ -263,7 +249,7 @@ for idx,event in enumerate(events,1):
 
         safe=ch["name"].replace('"','&quot;')
 
-        html+=f'<a href="{ch["url"]}" target="_self"><button>📺 {safe} [{i}]</button></a>'
+        html+=f'<button onclick="playInIframe(\'{ch["url"]}\')">📺 {safe} [{i}]</button>'
 
     html+='</div></div>'
 
@@ -272,9 +258,10 @@ html+="""
 
 <div id="playerContainer">
 
+<div>
 <button class="ctrl" onclick="toggleFullscreen()">Fullscreen</button>
-
 <button class="ctrl" onclick="togglePlayer()">Chiudi</button>
+</div>
 
 <iframe id="iframePlayer"></iframe>
 
