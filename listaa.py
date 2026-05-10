@@ -57,7 +57,7 @@ for time_str,title,channels_html in blocks:
     ch_list=[]
 
     for ch_id,ch_name in channels:
-        stream_url=f"https://dlstreams.top/embed/stream-{ch_id}.php"
+        stream_url=f"https://dlhd.pk/embed/stream-{ch_id}.php"
         ch_list.append({
             "name":ch_name.strip(),
             "url":stream_url
