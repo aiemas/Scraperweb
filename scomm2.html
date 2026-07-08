@@ -66,26 +66,34 @@ async function analizzaPartitaAutomaticamente() {
     esitoDiv.style.display = 'none';
     loadingDiv.style.display = 'block';
 
+    // Usiamo il 2025 come stagione di riferimento per i dati consolidati dell'ultimo anno
+    const season = "2025"; 
+
     try {
-        // Query corretta secondo le specifiche ufficiali
-        const response = await fetch(`https://rapidapi.com{leagueId}`, {
+        const response = await fetch(`https://rapidapi.com{season}&league=${leagueId}`, {
             method: 'GET',
             headers: {
                 'x-rapidapi-key': apiKey,
-                'x-rapidapi-host': '://rapidapi.com'
+                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
             }
         });
         
         const data = await response.json();
         
-        // Verifica la risposta del server
-        if (!data.response || data.response.length === 0) {
-            alert('Nessun dato ricevuto. Verifica i limiti dell\'account o la stagione.');
+        // Verifica se l'API ha risposto con un errore di autenticazione o dati vuoti
+        if (data.message && data.message.includes("Invalid API key")) {
+            alert('Errore: La chiave API inserita non è attiva o è errata.');
             loadingDiv.style.display = 'none';
             return;
         }
 
-        // Accesso corretto all'array nidificato delle classifiche v3
+        if (!data.response || data.response.length === 0) {
+            alert('Nessun dato ricevuto. Verifica i limiti del piano o la stagione.');
+            loadingDiv.style.display = 'none';
+            return;
+        }
+
+        // PERCORSO NIDIFICATO CORRETTO: data.response[0].league.standings[0]
         const standings = data.response[0].league.standings[0];
         
         // Filtro delle squadre cercate
@@ -93,7 +101,7 @@ async function analizzaPartitaAutomaticamente() {
         const awayData = standings.find(item => item.team.name.toLowerCase().includes(awayInput));
         
         if(!homeData || !awayData) {
-            alert('Squadre non trovate. Usa i nomi ufficiali in inglese (Es. Mjallby, AIK)!');
+            alert('Squadre non trovate. Usa i nomi ufficiali in lingua inglese (Es. Juventus, Milan, Malmo FF, AIK)!');
             loadingDiv.style.display = 'none';
             return;
         }
