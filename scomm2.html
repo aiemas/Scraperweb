@@ -3,165 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bet Analyser PRO - SportAPI Bypass</title>
+    <title>Bet Analyser PRO - Semiautomatico</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
         .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        h1 { font-size: 22px; text-align: center; color: #28a745; margin-bottom: 20px; }
-        .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
-        label { font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #4b4f56; }
-        input, select { padding: 10px; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; }
-        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #218838; }
+        h1 { font-size: 22px; text-align: center; color: #007bff; margin-bottom: 20px; }
+        .section { border-bottom: 1px solid #e4e6eb; padding-bottom: 15px; margin-bottom: 15px; }
+        .section-title { font-weight: bold; font-size: 14px; text-transform: uppercase; color: #65676b; margin-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 13px; margin-bottom: 5px; color: #4b4f56; }
+        input { padding: 8px; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; }
+        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #0056b3; }
         .result { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
         .value { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .no-value { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         .stats { font-size: 14px; font-weight: normal; margin-top: 10px; text-align: left; line-height: 1.5; color: #4b4f56; }
-        .loading { text-align: center; color: #65676b; display: none; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Analizzatore Automatico SportAPI</h1>
+    <h1>Analizzatore Combo 12 + Over 1.5</h1>
     
-    <!-- SELEZIONE CAMPIONATO -->
-    <div class="input-group">
-        <label>Campionato</label>
-        <select id="tournament">
-            <option value="175">Allsvenskan (Svezia)</option>
-            <option value="33">Serie A (Italia)</option>
-            <option value="17">Premier League (Inghilterra)</option>
-            <option value="8">La Liga (Spagna)</option>
-            <option value="35">Bundesliga (Germania)</option>
-            <option value="34">Ligue 1 (Francia)</option>
-        </select>
+    <!-- SQUADRA CASA -->
+    <div class="section">
+        <div class="section-title">Squadra in Casa (Dati rendimento in CASA)</div>
+        <div class="grid">
+            <div class="input-group"><label>Partite Giocate</label><input type="number" id="gCasa" value="10"></div>
+            <div class="input-group"><label>Pareggi (X)</label><input type="number" id="pCasa" value="2"></div>
+        </div>
+        <div class="grid" style="margin-top: 5px;">
+            <div class="input-group"><label>Gol Fatti in Casa</label><input type="number" id="gfCasa" value="18"></div>
+            <div class="input-group"><label>Gol Subiti in Casa</label><input type="number" id="gsCasa" value="10"></div>
+        </div>
     </div>
 
-    <!-- INPUT SQUADRE -->
-    <div class="input-group"><label>Squadra in Casa</label><input type="text" id="homeTeam" placeholder="Es. Mjallby"></div>
-    <div class="input-group"><label>Squadra Fuori</label><input type="text" id="awayTeam" placeholder="Es. AIK"></div>
-    <div class="input-group"><label>Quota Combo (12 + Over 1.5)</label><input type="number" step="0.01" id="quota" value="1.35"></div>
+    <!-- SQUADRA FUORI -->
+    <div class="section">
+        <div class="section-title">Squadra Fuori (Dati rendimento fuori/TRASFERTA)</div>
+        <div class="grid">
+            <div class="input-group"><label>Partite Giocate</label><input type="number" id="gFuori" value="10"></div>
+            <div class="input-group"><label>Pareggi (X)</label><input type="number" id="pFuori" value="3"></div>
+        </div>
+        <div class="grid" style="margin-top: 5px;">
+            <div class="input-group"><label>Gol Fatti Fuori</label><input type="number" id="gfFuori" value="12"></div>
+            <div class="input-group"><label>Gol Subiti Fuori</label><input type="number" id="gsFuori" value="15"></div>
+        </div>
+    </div>
 
-    <button onclick="analizzaConSportAPI()">Scarica Dati e Analizza</button>
-    
-    <div id="loading" class="loading">Interrogando i server di SportAPI tramite canale sicuro...</div>
+    <!-- QUOTA -->
+    <div class="section">
+        <div class="section-title">Quota Mercato</div>
+        <div class="input-group">
+            <label>Quota Combo (12 + Over 1.5)</label>
+            <input type="number" step="0.01" id="quota" value="1.35">
+        </div>
+    </div>
+
+    <button onclick="calcolaScommessa()">Elabora e Analizza Valore</button>
+
     <div id="esito" class="result"></div>
 </div>
 
 <script>
-async function analizzaConSportAPI() {
-    const apiKey = "a8ed4f815bmsha5c90cc35b643ddp121d58jsn4849d09d6be4";
-    const tournamentId = document.getElementById('tournament').value;
-    const homeInput = document.getElementById('homeTeam').value.trim().toLowerCase();
-    const awayInput = document.getElementById('awayTeam').value.trim().toLowerCase();
+function calcolaScommessa() {
+    const gCasa = parseFloat(document.getElementById('gCasa').value) || 1;
+    const pCasa = parseFloat(document.getElementById('pCasa').value) || 0;
+    const gfCasa = parseFloat(document.getElementById('gfCasa').value) || 0;
+    const gsCasa = parseFloat(document.getElementById('gsCasa').value) || 0;
+    
+    const gFuori = parseFloat(document.getElementById('gFuori').value) || 1;
+    const pFuori = parseFloat(document.getElementById('pFuori').value) || 0;
+    const gfFuori = parseFloat(document.getElementById('gfFuori').value) || 0;
+    const gsFuori = parseFloat(document.getElementById('gsFuori').value) || 0;
+    
     const quota = parseFloat(document.getElementById('quota').value);
-    
+
+    // Calcolo probabilità No Pareggio (Segno 12)
+    const probNoPareggioCasa = 1 - (pCasa / gCasa);
+    const probNoPareggioFuori = 1 - (pFuori / gFuori);
+    const prob12Finale = (probNoPareggioCasa + probNoPareggioFuori) / 2;
+
+    // Calcolo media gol complessiva dei due rendimenti incrociati
+    const mediaGolCasa = (gfCasa + gsCasa) / gCasa;
+    const mediaGolFuori = (gfFuori + gsFuori) / gFuori;
+    const mediaGolPartita = (mediaGolCasa + mediaGolFuori) / 2;
+
+    // Algoritmo predittivo lineare ponderato per stimare la copertura dell'Over 1.5
+    let probOverFinale = 0.38 + (mediaGolPartita * 0.16);
+    if(probOverFinale > 0.96) probOverFinale = 0.96;
+    if(probOverFinale < 0.40) probOverFinale = 0.40;
+
+    // Calcolo del valore effettivo contro la quota del bookmaker
+    const probComboReale = prob12Finale * probOverFinale;
+    const probComboRealePercentuale = probComboReale * 100;
+    const probBookmaker = (1 / quota) * 100;
+
     const esitoDiv = document.getElementById('esito');
-    const loadingDiv = document.getElementById('loading');
-    
-    if(!homeInput || !awayInput) { alert('Inserisci i nomi delle squadre!'); return; }
-    if(!quota || quota <= 1) { alert('Inserisci una quota valida!'); return; }
+    esitoDiv.style.display = 'block';
 
-    esitoDiv.style.display = 'none';
-    loadingDiv.style.display = 'block';
-
-    try {
-        // ID Stagioni sportive aggiornate
-        let seasonId = "66129"; // Svezia 2026
-        if(tournamentId === "33") seasonId = "61642"; // Serie A
-        if(tournamentId === "17") seasonId = "61621"; // Premier
-        if(tournamentId === "8")  seasonId = "61643"; // LaLiga
-        if(tournamentId === "35") seasonId = "61647"; // Bundesliga
-        if(tournamentId === "34") seasonId = "61644"; // Ligue 1
-
-        // PROXY REVERSE CORS-ANYWHERE PER SBLOCCARE LA SICUREZZA WEB
-        const proxyUrl = "https://herokuapp.com";
-        const targetUrl = `https://rapidapi.com{tournamentId}/season/${seasonId}/standings/total`;
-
-        const response = await fetch(proxyUrl + targetUrl, {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-key': apiKey,
-                'x-rapidapi-host': 'sportapi7.p.rapidapi.com',
-                'Origin': window.location.origin
-            }
-        });
-        
-        const data = await response.json();
-        
-        // Lettura e verifica della struttura corretta di SportAPI (array standings nidificato)
-        if (!data.standings || data.standings.length === 0 || !data.standings[0].rows) {
-            alert('I server non hanno restituito dati validi. Prova ad attivare temporaneamente l\'accesso demo su ://herokuapp.com o verifica i limiti.');
-            loadingDiv.style.display = 'none';
-            return;
-        }
-
-        // Estrazione esatta delle righe SofaScore
-        const rows = data.standings[0].rows;
-        
-        const homeRow = rows.find(r => r.team.name.toLowerCase().includes(homeInput) || r.team.shortName.toLowerCase().includes(homeInput));
-        const awayRow = rows.find(r => r.team.name.toLowerCase().includes(awayInput) || r.team.shortName.toLowerCase().includes(awayInput));
-        
-        if (!homeRow || !awayRow) {
-            alert('Squadre non trovate nella classifica. Verifica i nomi in inglese (Es. Mjällby, AIK, Juventus, Milan)!');
-            loadingDiv.style.display = 'none';
-            return;
-        }
-
-        // Estrazione dei parametri numerici
-        const gCasa = homeRow.matches;
-        const pCasa = homeRow.draws;
-        const golFattiCasa = homeRow.scoresFor;
-        const golSubitiCasa = homeRow.scoresAgainst;
-
-        const gFuori = awayRow.matches;
-        const pFuori = awayRow.draws;
-        const golFattiFuori = awayRow.scoresFor;
-        const golSubitiFuori = awayRow.scoresAgainst;
-
-        // Calcolo della Doppia Chance 12
-        const probNoPareggioCasa = gCasa > 0 ? (1 - (pCasa / gCasa)) : 0.75;
-        const probNoPareggioFuori = gFuori > 0 ? (1 - (pFuori / gFuori)) : 0.75;
-        const prob12Finale = (probNoPareggioCasa + probNoPareggioFuori) / 2;
-
-        // Calcolo media gol complessivi per Over 1.5
-        const mediaGolPartita = ((golFattiCasa + golSubitiCasa) / (gCasa || 1) + (golFattiFuori + golSubitiFuori) / (gFuori || 1)) / 2;
-        
-        let probOverFinale = 0.38 + (mediaGolPartita * 0.16);
-        if(probOverFinale > 0.96) probOverFinale = 0.96;
-        if(probOverFinale < 0.40) probOverFinale = 0.40;
-
-        const probComboReale = prob12Finale * probOverFinale;
-        const probComboRealePercentuale = probComboReale * 100;
-        const probBookmaker = (1 / quota) * 100;
-
-        loadingDiv.style.display = 'none';
-        esitoDiv.style.display = 'block';
-
-        if (probComboRealePercentuale > probBookmaker) {
-            esitoDiv.className = 'result value';
-            esitoDiv.innerHTML = `<div>✓ VALORE TROVATO!</div>`;
-        } else {
-            esitoDiv.className = 'result no-value';
-            esitoDiv.innerHTML = `<div>✗ NESSUN VALORE</div>`;
-        }
-
-        esitoDiv.innerHTML += `
-            <div class="stats">
-                <strong>Match:</strong> ${homeRow.team.name} vs ${awayRow.team.name}<br>
-                <strong>Tua Probabilità Stimata:</strong> ${probComboRealePercentuale.toFixed(2)}%<br>
-                <strong>Probabilità del Bookmaker:</strong> ${probBookmaker.toFixed(2)}%<br>
-                <hr style="border:0; border-top:1px solid rgba(0,0,0,0.1); margin:8px 0;">
-                • Probabilità No Pareggio (12): ${(prob12Finale*100).toFixed(2)}%<br>
-                • Stima Over 1.5 (Media Gol ${mediaGolPartita.toFixed(2)}): ${(probOverFinale*100).toFixed(2)}%
-            </div>`;
-
-    } catch (error) {
-        alert('Errore nello sblocco dei dati o nella lettura dei parametri.');
-        loadingDiv.style.display = 'none';
-        console.error(error);
+    if (probComboRealePercentuale > probBookmaker) {
+        esitoDiv.className = 'result value';
+        esitoDiv.innerHTML = `<div>✓ VALORE TROVATO!</div>`;
+    } else {
+        esitoDiv.className = 'result no-value';
+        esitoDiv.innerHTML = `<div>✗ NESSUN VALORE</div>`;
     }
+
+    esitoDiv.innerHTML += `
+        <div class="stats">
+            <strong>Tua Probabilità Stimata:</strong> ${probComboRealePercentuale.toFixed(2)}%<br>
+            <strong>Probabilità del Bookmaker:</strong> ${probBookmaker.toFixed(2)}%<br>
+            <hr style="border:0; border-top:1px solid rgba(0,0,0,0.1); margin:8px 0;">
+            • Probabilità No Pareggio (12): ${(prob12Finale*100).toFixed(2)}%<br>
+            • Stima Over 1.5 (Media Reti ${mediaGolPartita.toFixed(2)}): ${(probOverFinale*100).toFixed(2)}%
+        </div>
+    `;
 }
 </script>
 </body>
