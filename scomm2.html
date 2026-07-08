@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bet Analyser PRO - 12 + Over 1.5</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        h1 { font-size: 22px; text-align: center; color: #28a745; margin-bottom: 20px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        label { font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #4b4f56; }
+        input, select { padding: 10px; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #218838; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
+        .value { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .no-value { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .stats { font-size: 14px; font-weight: normal; margin-top: 10px; text-align: left; line-height: 1.5; color: #4b4f56; }
+        .loading { text-align: center; color: #65676b; display: none; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Analizzatore Automatico PRO</h1>
+    
+    <!-- SELEZIONE CAMPIONATO -->
+    <div class="input-group">
+        <label>Campionato</label>
+        <select id="league">
+            <option value="113">Allsvenskan (Svezia)</option>
+            <option value="135">Serie A (Italia)</option>
+            <option value="39">Premier League (Inghilterra)</option>
+            <option value="140">La Liga (Spagna)</option>
+            <option value="78">Bundesliga (Germania)</option>
+            <option value="61">Ligue 1 (Francia)</option>
+        </select>
+    </div>
+
+    <!-- INPUT SQUADRE -->
+    <div class="input-group"><label>Squadra in Casa</label><input type="text" id="homeTeam" placeholder="Es. Mjallby"></div>
+    <div class="input-group"><label>Squadra Fuori</label><input type="text" id="awayTeam" placeholder="Es. AIK"></div>
+    <div class="input-group"><label>Quota Combo (12 + Over 1.5)</label><input type="number" step="0.01" id="quota" value="1.35"></div>
+
+    <button onclick="analizzaPartitaAutomaticamente()">Scarica Dati e Analizza</button>
+    
+    <div id="loading" class="loading">Connessione ai server API in corso...</div>
+    <div id="esito" class="result"></div>
+</div>
+
+<script>
+async function analizzaPartitaAutomaticamente() {
+    // La tua chiave API inserita direttamente e centralizzata nel codice
+    const apiKey = "a8ed4f815bmsha5c90cc35b643ddp121d58jsn4849d09d6be4";
+    
+    const leagueId = document.getElementById('league').value;
+    const homeInput = document.getElementById('homeTeam').value.trim().toLowerCase();
+    const awayInput = document.getElementById('awayTeam').value.trim().toLowerCase();
+    const quota = parseFloat(document.getElementById('quota').value);
+    
+    const esitoDiv = document.getElementById('esito');
+    const loadingDiv = document.getElementById('loading');
+    
+    if(!homeInput || !awayInput) { alert('Inserisci i nomi delle squadre!'); return; }
+    if(!quota || quota <= 1) { alert('Inserisci una quota valida!'); return; }
+
+    esitoDiv.style.display = 'none';
+    loadingDiv.style.display = 'block';
+
+    try {
+        // Chiamata API corretta puntata all'endpoint ufficiale v3 delle classifiche
+        const response = await fetch(`https://rapidapi.com{leagueId}`, {
+            method: 'GET',
+            headers: {
+                'x-rapidapi-key': apiKey,
+                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+            }
+        });
+        
+        const data = await response.json();
+        
+        // Controllo di sicurezza se l'API risponde correttamente
+        if(!data.response || data.response.length === 0) {
+            alert('Impossibile recuperare la classifica. Controlla che la stagione del campionato sia attiva.');
+            loadingDiv.style.display = 'none';
+            return;
+        }
+
+        // Percorso matematico corretto per estrarre la griglia delle squadre
+        const standings = data.response[0].league.standings[0];
+        
+        // Trova i nodi delle due squadre ignorando maiuscole e minuscole
+        const homeData = standings.find(item => item.team.name.toLowerCase().includes(homeInput));
+        const awayData = standings.find(item => item.team.name.toLowerCase().includes(awayInput));
+        
+        if(!homeData || !awayData) {
+            alert('Una o entrambe le squadre non sono state trovate. Controlla la dicitura inglese (Es. AIK, Mjallby)!');
+            loadingDiv.style.display = 'none';
+            return;
+        }
+
+        // Raccolta delle informazioni sui pareggi e partite giocate
+        const gCasa = homeData.home.played;
+        const pCasa = homeData.home.draw;
+        const golFattiCasa = homeData.home.goals.for;
+        const golSubitiCasa = homeData.home.goals.against;
+        
+        const gFuori = awayData.away.played;
+        const pFuori = awayData.away.draw;
+        const golFattiFuori = awayData.away.goals.for;
+        const golSubitiFuori = awayData.away.goals.against;
+
+        // Calcolo delle probabilità del segno "12" (No pareggio)
+        const probNoPareggioCasa = gCasa > 0 ? (1 - (pCasa / gCasa)) : 0.75;
+        const probNoPareggioFuori = gFuori > 0 ? (1 - (pFuori / gFuori)) : 0.75;
+        const prob12Finale = (probNoPareggioCasa + probNoPareggioFuori) / 2;
+
+        // Calcolo predittivo dell'Over 1.5 basato sullo storico dei gol complessivi generati
+        const mediaGolPartita = (((golFattiCasa + golSubitiCasa) / (gCasa || 1)) + ((golFattiFuori + golSubitiFuori) / (gFuori || 1))) / 2;
+        
+        // Algoritmo statistico ponderato per la stima dell'Over 1.5
+        let probOverFinale = 0.38 + (mediaGolPartita * 0.16); 
+        if(probOverFinale > 0.96) probOverFinale = 0.96;
+        if(probOverFinale < 0.40) probOverFinale = 0.40;
+
+        // Verifica matematica del valore contro la quota del bookmaker
+        const probComboReale = prob12Finale * probOverFinale;
+        const probComboRealePercentuale = probComboReale * 100;
+        const probBookmaker = (1 / quota) * 100;
+
+        loadingDiv.style.display = 'none';
+        esitoDiv.style.display = 'block';
+
+        if (probComboRealePercentuale > probBookmaker) {
+            esitoDiv.className = 'result value';
+            esitoDiv.innerHTML = `<div>✓ VALORE TROVATO!</div>`;
+        } else {
+            esitoDiv.className = 'result no-value';
+            esitoDiv.innerHTML = `<div>✗ NESSUN VALORE</div>`;
+        }
+
+        esitoDiv.innerHTML += `
+            <div class="stats">
+                <strong>Match analizzato:</strong> ${homeData.team.name} vs ${awayData.team.name}<br>
+                <strong>Tua Probabilità:</strong> ${probComboRealePercentuale.toFixed(2)}%<br>
+                <strong>Probabilità Banco:</strong> ${probBookmaker.toFixed(2)}%<br>
+                <hr style="border:0; border-top:1px solid rgba(0,0,0,0.1); margin:8px 0;">
+                • Probabilità No Pareggio (12): ${(prob12Finale*100).toFixed(2)}%<br>
+                • Stima Over 1.5 (Media Gol ${mediaGolPartita.toFixed(2)}): ${(probOverFinale*100).toFixed(2)}%
+            </div>`;
+
+    } catch (error) {
+        alert('Errore nel recupero dati dai server di RapidAPI.');
+        loadingDiv.style.display = 'none';
+        console.error(error);
+    }
+}
+</script>
+</body>
+</html>
