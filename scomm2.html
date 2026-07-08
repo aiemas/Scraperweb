@@ -51,9 +51,7 @@
 
 <script>
 async function analizzaPartitaAutomaticamente() {
-    // La tua chiave API reale inserita in modo sicuro
     const apiKey = "a8ed4f815bmsha5c90cc35b643ddp121d58jsn4849d09d6be4";
-    
     const leagueId = document.getElementById('league').value;
     const homeInput = document.getElementById('homeTeam').value.trim().toLowerCase();
     const awayInput = document.getElementById('awayTeam').value.trim().toLowerCase();
@@ -69,33 +67,33 @@ async function analizzaPartitaAutomaticamente() {
     loadingDiv.style.display = 'block';
 
     try {
-        // LINK CORRETTO CON URL QUERY COMPILATA DINAMICAMENTE
+        // Query corretta secondo le specifiche ufficiali
         const response = await fetch(`https://rapidapi.com{leagueId}`, {
             method: 'GET',
             headers: {
                 'x-rapidapi-key': apiKey,
-                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+                'x-rapidapi-host': '://rapidapi.com'
             }
         });
         
         const data = await response.json();
         
-        // Controllo se i dati della lega sono stati estratti
+        // Verifica la risposta del server
         if (!data.response || data.response.length === 0) {
-            alert('Nessun dato ricevuto dai server. Verifica la tua quota giornaliera su RapidAPI o la stagione.');
+            alert('Nessun dato ricevuto. Verifica i limiti dell\'account o la stagione.');
             loadingDiv.style.display = 'none';
             return;
         }
 
-        // Struttura corretta per scendere nell'array nidificato di API-Football v3
+        // Accesso corretto all'array nidificato delle classifiche v3
         const standings = data.response[0].league.standings[0];
         
-        // Ricerca dei nodi delle squadre
+        // Filtro delle squadre cercate
         const homeData = standings.find(item => item.team.name.toLowerCase().includes(homeInput));
         const awayData = standings.find(item => item.team.name.toLowerCase().includes(awayInput));
         
         if(!homeData || !awayData) {
-            alert('Una o entrambe le squadre non sono state trovate. Controlla la dicitura inglese (Es. Mjallby, AIK)!');
+            alert('Squadre non trovate. Usa i nomi ufficiali in inglese (Es. Mjallby, AIK)!');
             loadingDiv.style.display = 'none';
             return;
         }
@@ -116,15 +114,15 @@ async function analizzaPartitaAutomaticamente() {
         const probNoPareggioFuori = gFuori > 0 ? (1 - (pFuori / gFuori)) : 0.75;
         const prob12Finale = (probNoPareggioCasa + probNoPareggioFuori) / 2;
 
-        // Calcolo della media reti per l'Over 1.5 indotto
+        // Calcolo della media reti complessiva
         const mediaGolPartita = (((golFattiCasa + golSubitiCasa) / (gCasa || 1)) + ((golFattiFuori + golSubitiFuori) / (gFuori || 1))) / 2;
         
-        // Algoritmo predittivo per calcolare la copertura dell'Over 1.5
+        // Algoritmo predittivo per la copertura dell'Over 1.5
         let probOverFinale = 0.38 + (mediaGolPartita * 0.16); 
         if(probOverFinale > 0.96) probOverFinale = 0.96;
         if(probOverFinale < 0.40) probOverFinale = 0.40;
 
-        // Calcolo del valore effettivo contro la quota del bookmaker
+        // Verifica matematica del valore
         const probComboReale = prob12Finale * probOverFinale;
         const probComboRealePercentuale = probComboReale * 100;
         const probBookmaker = (1 / quota) * 100;
@@ -151,7 +149,7 @@ async function analizzaPartitaAutomaticamente() {
             </div>`;
 
     } catch (error) {
-        alert('Errore imprevisto nell\'elaborazione dello script JavaScript.');
+        alert('Errore imprevisto nell\'elaborazione dei dati.');
         loadingDiv.style.display = 'none';
         console.error(error);
     }
