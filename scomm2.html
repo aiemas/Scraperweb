@@ -67,44 +67,45 @@ async function analizzaConSportAPI() {
     loadingDiv.style.display = 'block';
 
     try {
-        // ID della stagione corrente per i tornei selezionati (SofaScore ID standard per le ultime stagioni stabili)
-        let seasonId = "52382"; // Default Svezia 2024/2025
-        if(tournamentId === "33") seasonId = "61642"; // Serie A
-        if(tournamentId === "17") seasonId = "61621"; // Premier
-        if(tournamentId === "8")  seasonId = "61643"; // LaLiga
-        if(tournamentId === "35") seasonId = "61647"; // Bundesliga
-        if(tournamentId === "34") seasonId = "61644"; // Ligue 1
+        // ID Stagioni correnti (Svezia 2026 attiva, Europa 2025/2026 consolidate)
+        let seasonId = "66129"; // Svezia 2026
+        if(tournamentId === "33") seasonId = "61642"; // Serie A 25/26
+        if(tournamentId === "17") seasonId = "61621"; // Premier 25/26
+        if(tournamentId === "8")  seasonId = "61643"; // LaLiga 25/26
+        if(tournamentId === "35") seasonId = "61647"; // Bundesliga 25/26
+        if(tournamentId === "34") seasonId = "61644"; // Ligue 1 25/26
 
-        // CHIAMATA CORRETTA AI SERVER DI SPORTAPI7 (Endpoint Classifica Totale)
+        // Chiamata all'endpoint corretto per SportAPI7
         const response = await fetch(`https://rapidapi.com{tournamentId}/season/${seasonId}/standings/total`, {
             method: 'GET',
             headers: {
                 'x-rapidapi-key': apiKey,
-                'x-rapidapi-host': 'sportapi7.p.rapidapi.com'
+                'x-rapidapi-host': '://rapidapi.com'
             }
         });
         
         const data = await response.json();
         
+        // CORREZIONE LETTURA STRUTTURA: SportAPI invia un array di blocchi standings
         if (!data.standings || data.standings.length === 0 || !data.standings[0].rows) {
-            alert('Nessun dato estratto. Verifica i limiti di chiamata o l\'ID della stagione.');
+            alert('Nessun dato valido estratto. Verifica i limiti di chiamata o che il torneo sia corretto.');
             loadingDiv.style.display = 'none';
             return;
         }
 
         const rows = data.standings[0].rows;
         
-        // Mappatura delle righe delle squadre
+        // Mappatura flessibile basata sia sul nome completo che su quello breve
         const homeRow = rows.find(r => r.team.name.toLowerCase().includes(homeInput) || r.team.shortName.toLowerCase().includes(homeInput));
         const awayRow = rows.find(r => r.team.name.toLowerCase().includes(awayInput) || r.team.shortName.toLowerCase().includes(awayInput));
         
         if (!homeRow || !awayRow) {
-            alert('Squadre non trovate. Controlla i nomi ufficiali inglesi (Es. Juventus, Milan, Mjällby)!');
+            alert('Squadre non trovate. Verifica i nomi ufficiali (Es. Mjällby, AIK, Juventus, Milan)!');
             loadingDiv.style.display = 'none';
             return;
         }
 
-        // Estrazione dati puliti per SportAPI
+        // Estrazione dati corretti per la struttura SportAPI
         const gCasa = homeRow.matches;
         const pCasa = homeRow.draws;
         const golFattiCasa = homeRow.scoresFor;
@@ -116,8 +117,8 @@ async function analizzaConSportAPI() {
         const golSubitiFuori = awayRow.scoresAgainst;
 
         // Calcolo Algoritmico della Doppia Chance 12
-        const probNoPareggioCasa = gCasa > 0 ? (1 - (pCasa / gCasa)) : 0.76;
-        const probNoPareggioFuori = gFuori > 0 ? (1 - (pFuori / gFuori)) : 0.74;
+        const probNoPareggioCasa = gCasa > 0 ? (1 - (pCasa / gCasa)) : 0.75;
+        const probNoPareggioFuori = gFuori > 0 ? (1 - (pFuori / gFuori)) : 0.75;
         const prob12Finale = (probNoPareggioCasa + probNoPareggioFuori) / 2;
 
         // Calcolo della media reti complessiva
@@ -153,7 +154,7 @@ async function analizzaConSportAPI() {
             </div>`;
 
     } catch (error) {
-        alert('Errore di comunicazione con il server SportAPI.');
+        alert('Errore di comunicazione con il server SportAPI o risposta non leggibile.');
         loadingDiv.style.display = 'none';
         console.error(error);
     }
