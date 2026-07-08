@@ -66,7 +66,6 @@ async function analizzaPartitaAutomaticamente() {
     esitoDiv.style.display = 'none';
     loadingDiv.style.display = 'block';
 
-    // Usiamo il 2025 come stagione di riferimento per i dati consolidati dell'ultimo anno
     const season = "2025"; 
 
     try {
@@ -74,39 +73,30 @@ async function analizzaPartitaAutomaticamente() {
             method: 'GET',
             headers: {
                 'x-rapidapi-key': apiKey,
-                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+                'x-rapidapi-host': '://rapidapi.com'
             }
         });
         
         const data = await response.json();
         
-        // Verifica se l'API ha risposto con un errore di autenticazione o dati vuoti
-        if (data.message && data.message.includes("Invalid API key")) {
-            alert('Errore: La chiave API inserita non è attiva o è errata.');
+        if (!data.response || data.response.length === 0 || !data.response[0].league || !data.response[0].league.standings) {
+            alert('Nessun dato ricevuto. Verifica i limiti del piano o la stagione corrente.');
             loadingDiv.style.display = 'none';
             return;
         }
 
-        if (!data.response || data.response.length === 0) {
-            alert('Nessun dato ricevuto. Verifica i limiti del piano o la stagione.');
-            loadingDiv.style.display = 'none';
-            return;
-        }
-
-        // PERCORSO NIDIFICATO CORRETTO: data.response[0].league.standings[0]
+        // CORREZIONE STRUTTURA DEL DOPPIO ARRAY (response[0] e standings[0])
         const standings = data.response[0].league.standings[0];
         
-        // Filtro delle squadre cercate
         const homeData = standings.find(item => item.team.name.toLowerCase().includes(homeInput));
         const awayData = standings.find(item => item.team.name.toLowerCase().includes(awayInput));
         
         if(!homeData || !awayData) {
-            alert('Squadre non trovate. Usa i nomi ufficiali in lingua inglese (Es. Juventus, Milan, Malmo FF, AIK)!');
+            alert('Squadre non trovate. Verifica la grafia corretta in lingua inglese (Es. Juventus, Milan, Malmo FF, AIK)!');
             loadingDiv.style.display = 'none';
             return;
         }
 
-        // Estrazione record storici Casa/Fuori
         const gCasa = homeData.home.played;
         const pCasa = homeData.home.draw;
         const golFattiCasa = homeData.home.goals.for;
@@ -117,20 +107,16 @@ async function analizzaPartitaAutomaticamente() {
         const golFattiFuori = awayData.away.goals.for;
         const golSubitiFuori = awayData.away.goals.against;
 
-        // Calcolo probabilità No Pareggio (12)
         const probNoPareggioCasa = gCasa > 0 ? (1 - (pCasa / gCasa)) : 0.75;
         const probNoPareggioFuori = gFuori > 0 ? (1 - (pFuori / gFuori)) : 0.75;
         const prob12Finale = (probNoPareggioCasa + probNoPareggioFuori) / 2;
 
-        // Calcolo della media reti complessiva
         const mediaGolPartita = (((golFattiCasa + golSubitiCasa) / (gCasa || 1)) + ((golFattiFuori + golSubitiFuori) / (gFuori || 1))) / 2;
         
-        // Algoritmo predittivo per la copertura dell'Over 1.5
         let probOverFinale = 0.38 + (mediaGolPartita * 0.16); 
         if(probOverFinale > 0.96) probOverFinale = 0.96;
         if(probOverFinale < 0.40) probOverFinale = 0.40;
 
-        // Verifica matematica del valore
         const probComboReale = prob12Finale * probOverFinale;
         const probComboRealePercentuale = probComboReale * 100;
         const probBookmaker = (1 / quota) * 100;
