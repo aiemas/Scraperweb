@@ -51,7 +51,7 @@
 
 <script>
 async function analizzaPartitaAutomaticamente() {
-    // La tua chiave API inserita direttamente e centralizzata nel codice
+    // Chiave API iniettata e centralizzata
     const apiKey = "a8ed4f815bmsha5c90cc35b643ddp121d58jsn4849d09d6be4";
     
     const leagueId = document.getElementById('league').value;
@@ -69,38 +69,38 @@ async function analizzaPartitaAutomaticamente() {
     loadingDiv.style.display = 'block';
 
     try {
-        // Chiamata API corretta puntata all'endpoint ufficiale v3 delle classifiche
+        // LINK CORRETTO ALL'ENDPOINT UFFICIALE DI API-FOOTBALL
         const response = await fetch(`https://rapidapi.com{leagueId}`, {
             method: 'GET',
             headers: {
                 'x-rapidapi-key': apiKey,
-                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+                'x-rapidapi-host': '://rapidapi.com'
             }
         });
         
         const data = await response.json();
         
-        // Controllo di sicurezza se l'API risponde correttamente
-        if(!data.response || data.response.length === 0) {
-            alert('Impossibile recuperare la classifica. Controlla che la stagione del campionato sia attiva.');
+        // Verifica se la struttura dati restituita è valida
+        if (!data.response || data.response.length === 0 || !data.response[0].league || !data.response[0].league.standings) {
+            alert('Impossibile recuperare la classifica. Verifica che la stagione 2026 sia già partita per questo campionato.');
             loadingDiv.style.display = 'none';
             return;
         }
 
-        // Percorso matematico corretto per estrarre la griglia delle squadre
+        // Lettura corretta dell'array nidificato delle classifiche sport
         const standings = data.response[0].league.standings[0];
         
-        // Trova i nodi delle due squadre ignorando maiuscole e minuscole
+        // Filtro per estrarre i nodi delle squadre digitate
         const homeData = standings.find(item => item.team.name.toLowerCase().includes(homeInput));
         const awayData = standings.find(item => item.team.name.toLowerCase().includes(awayInput));
         
         if(!homeData || !awayData) {
-            alert('Una o entrambe le squadre non sono state trovate. Controlla la dicitura inglese (Es. AIK, Mjallby)!');
+            alert('Una o entrambe le squadre non sono state trovate. Usa i nomi ufficiali in inglese (Es. Mjallby, AIK)!');
             loadingDiv.style.display = 'none';
             return;
         }
 
-        // Raccolta delle informazioni sui pareggi e partite giocate
+        // Estrazione statistiche storiche casa/fuori
         const gCasa = homeData.home.played;
         const pCasa = homeData.home.draw;
         const golFattiCasa = homeData.home.goals.for;
@@ -111,20 +111,20 @@ async function analizzaPartitaAutomaticamente() {
         const golFattiFuori = awayData.away.goals.for;
         const golSubitiFuori = awayData.away.goals.against;
 
-        // Calcolo delle probabilità del segno "12" (No pareggio)
+        // Calcolo matematico per la probabilità della Doppia Chance 12
         const probNoPareggioCasa = gCasa > 0 ? (1 - (pCasa / gCasa)) : 0.75;
         const probNoPareggioFuori = gFuori > 0 ? (1 - (pFuori / gFuori)) : 0.75;
         const prob12Finale = (probNoPareggioCasa + probNoPareggioFuori) / 2;
 
-        // Calcolo predittivo dell'Over 1.5 basato sullo storico dei gol complessivi generati
+        // Calcolo della media gol complessiva per ricavare l'Over 1.5 indotto
         const mediaGolPartita = (((golFattiCasa + golSubitiCasa) / (gCasa || 1)) + ((golFattiFuori + golSubitiFuori) / (gFuori || 1))) / 2;
         
-        // Algoritmo statistico ponderato per la stima dell'Over 1.5
+        // Algoritmo predittivo lineare per stimare la copertura dell'Over 1.5
         let probOverFinale = 0.38 + (mediaGolPartita * 0.16); 
         if(probOverFinale > 0.96) probOverFinale = 0.96;
         if(probOverFinale < 0.40) probOverFinale = 0.40;
 
-        // Verifica matematica del valore contro la quota del bookmaker
+        // Moltiplicazione delle probabilità per stimare la quota reale della combo
         const probComboReale = prob12Finale * probOverFinale;
         const probComboRealePercentuale = probComboReale * 100;
         const probBookmaker = (1 / quota) * 100;
@@ -142,16 +142,16 @@ async function analizzaPartitaAutomaticamente() {
 
         esitoDiv.innerHTML += `
             <div class="stats">
-                <strong>Match analizzato:</strong> ${homeData.team.name} vs ${awayData.team.name}<br>
-                <strong>Tua Probabilità:</strong> ${probComboRealePercentuale.toFixed(2)}%<br>
-                <strong>Probabilità Banco:</strong> ${probBookmaker.toFixed(2)}%<br>
+                <strong>Match:</strong> ${homeData.team.name} vs ${awayData.team.name}<br>
+                <strong>Tua Probabilità Stimata:</strong> ${probComboRealePercentuale.toFixed(2)}%<br>
+                <strong>Probabilità del Bookmaker:</strong> ${probBookmaker.toFixed(2)}%<br>
                 <hr style="border:0; border-top:1px solid rgba(0,0,0,0.1); margin:8px 0;">
                 • Probabilità No Pareggio (12): ${(prob12Finale*100).toFixed(2)}%<br>
                 • Stima Over 1.5 (Media Gol ${mediaGolPartita.toFixed(2)}): ${(probOverFinale*100).toFixed(2)}%
             </div>`;
 
     } catch (error) {
-        alert('Errore nel recupero dati dai server di RapidAPI.');
+        alert('Errore tecnico nel recupero o nell\'elaborazione dei dati.');
         loadingDiv.style.display = 'none';
         console.error(error);
     }
