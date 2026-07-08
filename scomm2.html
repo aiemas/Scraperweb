@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bet Analyser PRO - Semiautomatico</title>
+    <title>Bet Analyser PRO - Quota Minima</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
         .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
@@ -17,19 +17,19 @@
         button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         button:hover { background: #0056b3; }
         .result { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
-        .value { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .no-value { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .value { background: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
         .stats { font-size: 14px; font-weight: normal; margin-top: 10px; text-align: left; line-height: 1.5; color: #4b4f56; }
+        .target-quota { font-size: 20px; font-weight: bold; color: #d32f2f; margin: 10px 0; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Analizzatore Combo 12 + Over 1.5</h1>
+    <h1>Calcolatore Quota Minima di Valore</h1>
     
     <!-- SQUADRA CASA -->
     <div class="section">
-        <div class="section-title">Squadra in Casa (Dati rendimento in CASA)</div>
+        <div class="section-title">Squadra in Casa (Dati in CASA)</div>
         <div class="grid">
             <div class="input-group"><label>Partite Giocate</label><input type="number" id="gCasa" value="10"></div>
             <div class="input-group"><label>Pareggi (X)</label><input type="number" id="pCasa" value="2"></div>
@@ -42,7 +42,7 @@
 
     <!-- SQUADRA FUORI -->
     <div class="section">
-        <div class="section-title">Squadra Fuori (Dati rendimento fuori/TRASFERTA)</div>
+        <div class="section-title">Squadra Fuori (Dati FUORI)</div>
         <div class="grid">
             <div class="input-group"><label>Partite Giocate</label><input type="number" id="gFuori" value="10"></div>
             <div class="input-group"><label>Pareggi (X)</label><input type="number" id="pFuori" value="3"></div>
@@ -53,22 +53,13 @@
         </div>
     </div>
 
-    <!-- QUOTA -->
-    <div class="section">
-        <div class="section-title">Quota Mercato</div>
-        <div class="input-group">
-            <label>Quota Combo (12 + Over 1.5)</label>
-            <input type="number" step="0.01" id="quota" value="1.35">
-        </div>
-    </div>
+    <button onclick="calcolaQuotaMinima()">Calcola Quota di Valore</button>
 
-    <button onclick="calcolaScommessa()">Elabora e Analizza Valore</button>
-
-    <div id="esito" class="result"></div>
+    <div id="esito" class="result value"></div>
 </div>
 
 <script>
-function calcolaScommessa() {
+function calcolaQuotaMinima() {
     const gCasa = parseFloat(document.getElementById('gCasa').value) || 1;
     const pCasa = parseFloat(document.getElementById('pCasa').value) || 0;
     const gfCasa = parseFloat(document.getElementById('gfCasa').value) || 0;
@@ -78,47 +69,44 @@ function calcolaScommessa() {
     const pFuori = parseFloat(document.getElementById('pFuori').value) || 0;
     const gfFuori = parseFloat(document.getElementById('gfFuori').value) || 0;
     const gsFuori = parseFloat(document.getElementById('gsFuori').value) || 0;
-    
-    const quota = parseFloat(document.getElementById('quota').value);
 
-    // Calcolo probabilità No Pareggio (Segno 12)
+    // Calcolo probabilità No Pareggio (12)
     const probNoPareggioCasa = 1 - (pCasa / gCasa);
     const probNoPareggioFuori = 1 - (pFuori / gFuori);
     const prob12Finale = (probNoPareggioCasa + probNoPareggioFuori) / 2;
 
-    // Calcolo media gol complessiva dei due rendimenti incrociati
+    // Calcolo media gol complessiva
     const mediaGolCasa = (gfCasa + gsCasa) / gCasa;
     const mediaGolFuori = (gfFuori + gsFuori) / gFuori;
     const mediaGolPartita = (mediaGolCasa + mediaGolFuori) / 2;
 
-    // Algoritmo predittivo lineare ponderato per stimare la copertura dell'Over 1.5
+    // Algoritmo predittivo per stimare la copertura dell'Over 1.5
     let probOverFinale = 0.38 + (mediaGolPartita * 0.16);
     if(probOverFinale > 0.96) probOverFinale = 0.96;
     if(probOverFinale < 0.40) probOverFinale = 0.40;
 
-    // Calcolo del valore effettivo contro la quota del bookmaker
+    // Probabilità totale stimata della combo 12 + Over 1.5
     const probComboReale = prob12Finale * probOverFinale;
     const probComboRealePercentuale = probComboReale * 100;
-    const probBookmaker = (1 / quota) * 100;
+
+    // LA FORMULA MAGICA: Quota Minima = 1 / Probabilità Reale
+    // Aggiungiamo un piccolissimo margine di guadagno del 5% per essere sicuri del valore
+    const quotaMinimaReale = 1 / probComboReale;
+    const quotaConveniente = quotaMinimaReale * 1.05; 
 
     const esitoDiv = document.getElementById('esito');
     esitoDiv.style.display = 'block';
 
-    if (probComboRealePercentuale > probBookmaker) {
-        esitoDiv.className = 'result value';
-        esitoDiv.innerHTML = `<div>✓ VALORE TROVATO!</div>`;
-    } else {
-        esitoDiv.className = 'result no-value';
-        esitoDiv.innerHTML = `<div>✗ NESSUN VALORE</div>`;
-    }
-
-    esitoDiv.innerHTML += `
+    esitoDiv.innerHTML = `
+        <div>STRATEGIA COMBO 12 + OVER 1.5</div>
+        <div class="stats" style="text-align: center;">Scommetti su questo match SOLO se la quota è:</div>
+        <div class="target-quota">≥ ${quotaConveniente.toFixed(2)}</div>
+        <hr style="border:0; border-top:1px solid rgba(0,0,0,0.1); margin:10px 0;">
         <div class="stats">
-            <strong>Tua Probabilità Stimata:</strong> ${probComboRealePercentuale.toFixed(2)}%<br>
-            <strong>Probabilità del Bookmaker:</strong> ${probBookmaker.toFixed(2)}%<br>
-            <hr style="border:0; border-top:1px solid rgba(0,0,0,0.1); margin:8px 0;">
+            • <strong>Tua Probabilità di successo:</strong> ${probComboRealePercentuale.toFixed(2)}%<br>
             • Probabilità No Pareggio (12): ${(prob12Finale*100).toFixed(2)}%<br>
-            • Stima Over 1.5 (Media Reti ${mediaGolPartita.toFixed(2)}): ${(probOverFinale*100).toFixed(2)}%
+            • Stima Copertura Over 1.5: ${(probOverFinale*100).toFixed(2)}%<br>
+            • Media Gol attesa: ${mediaGolPartita.toFixed(2)} a partita
         </div>
     `;
 }
