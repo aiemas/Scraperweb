@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Livescore Explorer</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#ececec;
+    margin:20px;
+}
+
+h1{
+    text-align:center;
+}
+
+#partite{
+    margin-top:20px;
+}
+
+.partita{
+
+    background:white;
+    padding:10px;
+    margin-bottom:8px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.partita:hover{
+
+    background:#dff0ff;
+}
+
+#dettagli{
+
+    margin-top:30px;
+    background:white;
+    padding:15px;
+    border-radius:8px;
+    white-space:pre-wrap;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>LIVE SCORE EXPLORER</h1>
+
+<div id="partite"></div>
+
+<h2>Dettagli partita</h2>
+
+<div id="dettagli">
+
+Clicca una partita...
+
+</div>
+
+<script>
+
+fetch("partite.json")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+    let contenitore=document.getElementById("partite");
+
+    data.Sctns.forEach(sezione=>{
+
+        if(!sezione.Cp) return;
+
+        let titolo=document.createElement("h2");
+
+        titolo.innerText=sezione.Cp.CompN;
+
+        contenitore.appendChild(titolo);
+
+        sezione.Cp.Evs.forEach(partita=>{
+
+            let casa=partita.T1[0].Nm;
+
+            let ospite=partita.T2[0].Nm;
+
+            let stato=partita.Eps;
+
+            let div=document.createElement("div");
+
+            div.className="partita";
+
+            div.innerHTML=`
+
+<b>${casa}</b>
+
+vs
+
+<b>${ospite}</b>
+
+&nbsp;&nbsp;
+
+(${stato})
+
+`;
+
+            div.onclick=function(){
+
+                document.getElementById("dettagli").innerText=
+
+JSON.stringify(partita,null,4);
+
+            }
+
+            contenitore.appendChild(div);
+
+        });
+
+    });
+
+});
+
+</script>
+
+</body>
+
+</html>
