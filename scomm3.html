@@ -1,49 +1,128 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
-
 <meta charset="UTF-8">
-
-<title>Livescore Explorer</title>
+<title>Live Score Explorer</title>
 
 <style>
 
 body{
-    font-family:Arial;
+    margin:0;
     background:#ececec;
-    margin:20px;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
-h1{
+header{
+    background:#222;
+    color:white;
+    padding:20px;
     text-align:center;
+    font-size:34px;
+    font-weight:bold;
 }
 
-#partite{
-    margin-top:20px;
+#barra{
+    background:white;
+    padding:15px;
+    position:sticky;
+    top:0;
+    box-shadow:0 2px 5px rgba(0,0,0,.2);
+}
+
+#ricerca{
+    width:100%;
+    font-size:18px;
+    padding:10px;
+    box-sizing:border-box;
+}
+
+#contenitore{
+
+    display:grid;
+    grid-template-columns:45% 55%;
+    height:calc(100vh - 120px);
+
+}
+
+#lista{
+
+    overflow:auto;
+    padding:20px;
+
+}
+
+#dettagli{
+
+    overflow:auto;
+    padding:20px;
+    background:white;
+    border-left:2px solid #ddd;
+
+}
+
+.campionato{
+
+    background:#1b5e20;
+    color:white;
+    padding:10px;
+    margin-top:25px;
+    font-size:22px;
+    border-radius:6px;
+
 }
 
 .partita{
 
     background:white;
-    padding:10px;
-    margin-bottom:8px;
-    border-radius:8px;
+    margin:8px 0;
+    padding:12px;
     cursor:pointer;
+    border-radius:6px;
+    transition:.2s;
+
 }
 
 .partita:hover{
 
-    background:#dff0ff;
+    background:#d9edf7;
+
 }
 
-#dettagli{
+.nome{
 
-    margin-top:30px;
-    background:white;
-    padding:15px;
-    border-radius:8px;
+    font-weight:bold;
+    font-size:18px;
+
+}
+
+.stato{
+
+    color:#777;
+    margin-top:4px;
+
+}
+
+table{
+
+    border-collapse:collapse;
+    width:100%;
+
+}
+
+td{
+
+    border-bottom:1px solid #ddd;
+    padding:8px;
+
+}
+
+pre{
+
     white-space:pre-wrap;
+    word-break:break-word;
+    background:#f5f5f5;
+    padding:10px;
+
 }
 
 </style>
@@ -52,19 +131,38 @@ h1{
 
 <body>
 
-<h1>LIVE SCORE EXPLORER</h1>
+<header>
 
-<div id="partite"></div>
+LIVE SCORE EXPLORER
 
-<h2>Dettagli partita</h2>
+</header>
+
+<div id="barra">
+
+<input
+id="ricerca"
+placeholder="Cerca squadra o campionato..."
+>
+
+</div>
+
+<div id="contenitore">
+
+<div id="lista"></div>
 
 <div id="dettagli">
 
-Clicca una partita...
+<h2>Dettagli partita</h2>
+
+Seleziona una partita.
+
+</div>
 
 </div>
 
 <script>
+
+let tuttePartite=[];
 
 fetch("9lug.json")
 
@@ -72,57 +170,191 @@ fetch("9lug.json")
 
 .then(data=>{
 
-    let contenitore=document.getElementById("partite");
+console.log(data);
 
-    data.Sctns.forEach(sezione=>{
+carica(data);
 
-        if(!sezione.Cp) return;
+});
 
-        let titolo=document.createElement("h2");
+function carica(data){
 
-        titolo.innerText=sezione.Cp.CompN;
+const lista=document.getElementById("lista");
 
-        contenitore.appendChild(titolo);
+lista.innerHTML="";
 
-        sezione.Cp.Evs.forEach(partita=>{
+tuttePartite=[];
 
-            let casa=partita.T1[0].Nm;
+data.Sctns.forEach(sezione=>{
 
-            let ospite=partita.T2[0].Nm;
+let nomeCampionato="";
+let eventi=[];
 
-            let stato=partita.Eps;
+if(sezione.Cp){
 
-            let div=document.createElement("div");
+nomeCampionato=sezione.Cp.CompN;
 
-            div.className="partita";
+eventi=sezione.Cp.Evs||[];
 
-            div.innerHTML=`
+}
 
-<b>${casa}</b>
+else if(sezione.Ts){
 
-vs
+nomeCampionato=sezione.Ts.Cnm+" - "+sezione.Ts.Snm;
 
-<b>${ospite}</b>
+eventi=sezione.Ts.Evs||[];
 
-&nbsp;&nbsp;
+}
 
-(${stato})
+if(eventi.length==0)
+return;
+
+const titolo=document.createElement("div");
+
+titolo.className="campionato";
+
+titolo.innerHTML=nomeCampionato;
+
+lista.appendChild(titolo);
+
+eventi.forEach(partita=>{
+
+const casa=partita.T1?.[0]?.Nm||"";
+
+const ospite=partita.T2?.[0]?.Nm||"";
+
+const stato=partita.Eps||"";
+
+const div=document.createElement("div");
+
+div.className="partita";
+
+div.dataset.testo=(nomeCampionato+" "+casa+" "+ospite).toLowerCase();
+
+div.innerHTML=`
+
+<div class="nome">
+
+${casa} vs ${ospite}
+
+</div>
+
+<div class="stato">
+
+${stato}
+
+</div>
 
 `;
 
-            div.onclick=function(){
+div.onclick=()=>mostra(partita,nomeCampionato);
 
-                document.getElementById("dettagli").innerText=
+lista.appendChild(div);
 
-JSON.stringify(partita,null,4);
+tuttePartite.push(div);
 
-            }
+});
 
-            contenitore.appendChild(div);
+});
 
-        });
+}
 
-    });
+function mostra(p,campionato){
+
+const casa=p.T1?.[0]?.Nm||"";
+
+const ospite=p.T2?.[0]?.Nm||"";
+
+const tv=(p.Md?.["112"]||[])
+
+.map(x=>x.Eid)
+
+.join("<br>");
+
+const streaming=(p.Md?.["29"]||[])
+
+.map(x=>x.Shls)
+
+.join("<br>");
+
+document.getElementById("dettagli").innerHTML=`
+
+<h2>${casa} vs ${ospite}</h2>
+
+<table>
+
+<tr>
+
+<td><b>Campionato</b></td>
+
+<td>${campionato}</td>
+
+</tr>
+
+<tr>
+
+<td><b>Stato</b></td>
+
+<td>${p.Eps||""}</td>
+
+</tr>
+
+<tr>
+
+<td><b>Turno</b></td>
+
+<td>${p.ErnInf||p.Snm||""}</td>
+
+</tr>
+
+<tr>
+
+<td><b>ID</b></td>
+
+<td>${p.Eid}</td>
+
+</tr>
+
+<tr>
+
+<td><b>TV</b></td>
+
+<td>${tv||"-"}</td>
+
+</tr>
+
+<tr>
+
+<td><b>Streaming</b></td>
+
+<td>${streaming||"-"}</td>
+
+</tr>
+
+</table>
+
+<h3>JSON completo</h3>
+
+<pre>${JSON.stringify(p,null,2)}</pre>
+
+`;
+
+}
+
+document.getElementById("ricerca")
+
+.addEventListener("keyup",function(){
+
+const testo=this.value.toLowerCase();
+
+tuttePartite.forEach(p=>{
+
+p.style.display=p.dataset.testo.includes(testo)
+
+?"block"
+
+:"none";
+
+});
 
 });
 
