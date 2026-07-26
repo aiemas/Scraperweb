@@ -11,6 +11,8 @@ TIME_OFFSET_HOURS = 2
 OUTPUT_FILE = "listaa.html"
 
 URL_DADDY = "https://dlhd.st/index.php?cat=All+Soccer+Events+%E2%9A%BD"
+URL_DADDY = "https://dlhd.st/index.php?cat=Club+Friendly+%E2%9A%BD"
+
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0",
